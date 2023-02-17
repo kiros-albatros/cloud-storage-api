@@ -7,9 +7,8 @@ class Router
     static array $urlList = [
         ''=> ['GET' => 'MainController::main()'],
         'funds' => ['GET' => 'Funds::list()', 'POST' => 'Funds::add()'],
-        'tests' => ['GET' => 'tests::list()', 'POST' => 'tests::add()'],
-        'user/{id}' => ['GET' => 'User::show()', 'POST' => 'tests::add()'],
-        'user/' => ['GET' => 'User::list()', 'POST' => 'tests::add()'],
+        'user/{id}' => ['GET' => 'User::show()', 'PUT' => 'User::update()', 'DELETE' => 'User::delete()'],
+        'user/' => ['GET' => 'User::list()', 'POST' => 'User::add()'],
     ];
 
     static function pathNotFound()
@@ -27,7 +26,7 @@ class Router
           //  var_dump(['uri'=> $uri]);
             preg_match($pattern, $uri, $matches);
             if (!empty($matches)) {
-                var_dump(['matches'=> $matches]);
+            //    var_dump(['matches'=> $matches]);
                 foreach (self::$urlList[$urlItem] as $method_item => $action) {
                     if ($method_item == $method) {
                         self::$isRouteFound = true;
@@ -39,14 +38,13 @@ class Router
                         } else {
                             $data = ['className' => $className, 'methodName' => $methodName, 'arg'=> ''];
                         }
-                        var_dump(['data' => $data]);
+                     //   var_dump(['data' => $data]);
                         return $data;
                         break;
                     }
                 }
             }
         }
-
         if (self::$isRouteFound === false) {
             return $this::pathNotFound();
         }
