@@ -9,6 +9,9 @@ class Router
         'funds' => ['GET' => 'Funds::list()', 'POST' => 'Funds::add()'],
         'user/{id}' => ['GET' => 'User::show()', 'PUT' => 'User::update()', 'DELETE' => 'User::delete()'],
         'user/' => ['GET' => 'User::list()', 'POST' => 'User::add()'],
+        'user/login' => ['POST' => 'User::login()'],
+        'user/logout' => ['GET' => 'User::logout()'],
+        'user/reset_password' => ['GET' => 'User::reset_password()'],
     ];
 
     static function pathNotFound()
