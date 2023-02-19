@@ -3,18 +3,11 @@
 class Router
 {
     static bool $isRouteFound = false;
+    public mixed $urlList;
 
-    static array $urlList = [
-        ''=> ['GET' => 'MainController::main()'],
-        'funds' => ['GET' => 'Funds::list()', 'POST' => 'Funds::add()'],
-        'user/{id}' => ['GET' => 'User::show()', 'PUT' => 'User::update()', 'DELETE' => 'User::delete()'],
-        'user/' => ['GET' => 'User::list()', 'POST' => 'User::add()'],
-        'user/login' => ['POST' => 'User::login()'],
-        'user/logout' => ['GET' => 'User::logout()'],
-        'user/reset_password' => ['GET' => 'User::reset_password()'],
-        'admin/user' => ['GET' => 'Admin::usersList()'],
-        'admin/user/{id}' => ['GET' => 'Admin::showUser()', 'PUT' => 'Admin::updateUser()', 'DELETE' => 'Admin::deleteUser()'],
-    ];
+    public function __construct() {
+        $this->urlList = (require __DIR__ . '/../../routes.php')['routes'];
+    }
 
     static function pathNotFound()
     {
@@ -23,7 +16,7 @@ class Router
 
     public function route($uri, $method)
     {
-        foreach (self::$urlList as $urlItem => $controllerAndAction) {
+        foreach ($this->urlList as $urlItem => $controllerAndAction) {
           //  var_dump(['urlItem'=> $urlItem]);
             $pattern = '~^'. $urlItem .'$~';
             $pattern = str_replace('{id}', '([0-9])', $pattern);
@@ -32,7 +25,7 @@ class Router
             preg_match($pattern, $uri, $matches);
             if (!empty($matches)) {
             //    var_dump(['matches'=> $matches]);
-                foreach (self::$urlList[$urlItem] as $method_item => $action) {
+                foreach ($this->urlList[$urlItem] as $method_item => $action) {
                     if ($method_item == $method) {
                         self::$isRouteFound = true;
                         $arr = explode("::", $action);

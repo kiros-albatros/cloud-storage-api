@@ -78,7 +78,7 @@ class User
     // GET /user/ Получить список пользователей (массив)
     public function list()
     {
-        $this->db->query('SELECT * FROM `User`;');
+        $this->db->query('SELECT email FROM `User`;');
         $users = $this->db->resultSet();
         var_dump(['users' => $users]);
     }
