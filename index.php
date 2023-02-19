@@ -2,6 +2,7 @@
 
 require_once("./autoload.php");
 
+// session_start();
 $uri = $_GET['route'] ?? '';
 $method = $_POST['_method'] ?? $_SERVER['REQUEST_METHOD'];
 

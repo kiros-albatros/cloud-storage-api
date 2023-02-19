@@ -12,6 +12,8 @@ class Router
         'user/login' => ['POST' => 'User::login()'],
         'user/logout' => ['GET' => 'User::logout()'],
         'user/reset_password' => ['GET' => 'User::reset_password()'],
+        'admin/user' => ['GET' => 'Admin::usersList()'],
+        'admin/user/{id}' => ['GET' => 'Admin::showUser()', 'PUT' => 'Admin::updateUser()', 'DELETE' => 'Admin::deleteUser()'],
     ];
 
     static function pathNotFound()

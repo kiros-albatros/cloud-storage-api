@@ -19,7 +19,7 @@ class User
                 $subject = 'Сброс пароля';
                 $body = 'Перейдите по ссылке для сброса пароля ...';
                 try {
-                    if  ( mail("kirsa.prikolnaja@gmail.com", $subject ,$body , 'Content-Type: text/html; charset=UTF-8')){
+                    if  ( mail($user->email, $subject ,$body , 'Content-Type: text/html; charset=UTF-8')){
                        {
                             echo "sent";
                         }
