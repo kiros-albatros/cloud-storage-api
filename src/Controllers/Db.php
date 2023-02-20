@@ -68,16 +68,16 @@ class Db
         return $this->stmt->fetch(PDO::FETCH_OBJ);
     }
 
-//    public function query(string $sql, $params = []): ?array
-//    {
-//        $sth = $this->pdo->prepare($sql);
-//        $result = $sth->execute($params);
-//
-//        if (false === $result) {
-//            return null;
-//        }
-//
-//        return $sth->fetchAll(PDO::FETCH_OBJ);
-//    }
+    public function getById($id, $tableName)
+    {
+        $this->query("SELECT * FROM `{$tableName}` WHERE id = :id");
+        $this->bind(':id', $id);
+        $item = $this->single();
+        if ($item) {
+            return $item;
+        } else {
+            return false;
+        }
+    }
 }
 

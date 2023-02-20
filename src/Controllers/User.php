@@ -9,7 +9,8 @@ class User
         $this->db = new Db();
     }
 
-    public function reset_password(){
+    public function reset_password()
+    {
         if (!empty($_SESSION['user_email'])) {
             $this->db->query('SELECT * FROM `User` WHERE email = :email');
             $this->db->bind(':email', $_SESSION['user_email']);
@@ -19,12 +20,11 @@ class User
                 $subject = 'Сброс пароля';
                 $body = 'Перейдите по ссылке для сброса пароля ...';
                 try {
-                    if  ( mail($user->email, $subject ,$body , 'Content-Type: text/html; charset=UTF-8')){
-                       {
+                    if (mail($user->email, $subject, $body, 'Content-Type: text/html; charset=UTF-8')) {
+                        {
                             echo "sent";
                         }
                     }
-
                 } catch (Exception $e) {
                     echo "Поломка";
                 }
@@ -32,17 +32,19 @@ class User
         }
     }
 
-    public function createUserSession($user){
+    public function createUserSession($user)
+    {
         session_start();
         $_SESSION['user_id'] = $user->id;
         $_SESSION['user_email'] = $user->email;
         $_SESSION['user_role'] = $user->role;
-      //  $_SESSION['user_auth_token'] = $user->auth_token;
+        //  $_SESSION['user_auth_token'] = $user->auth_token;
         $session_id = sha1(random_bytes(100)) . sha1(random_bytes(100));
         setcookie('session_id', $session_id, 0, '/', '', false, true);
     }
 
-    public function login() {
+    public function login()
+    {
         if (!empty($_POST['email']) && !empty($_POST['password'])) {
             $data = [
                 'email' => trim($_POST['email']),
@@ -68,7 +70,8 @@ class User
         }
     }
 
-    public function logout() {
+    public function logout()
+    {
         unset($_SESSION['user_id']);
         unset($_SESSION['user_email']);
         unset($_SESSION['user_role']);
@@ -86,9 +89,7 @@ class User
 //     GET /users/{id} Получить JSON-объект с информацией о конкретном пользователе
     public function show(int $id)
     {
-        $this->db->query('SELECT * FROM `User` WHERE id = :id');
-        $this->db->bind(':id', $id);
-        $user = $this->db->single();
+        $user = $this->db->getById($id, 'User');
         if ($user) {
             echo json_encode($user);
         } else {

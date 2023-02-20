@@ -1,5 +1,7 @@
 <?php
 
+//require_once '../Models/File.php';
+
 class File
 {
     private int $ownerId;
@@ -22,9 +24,7 @@ class File
     }
 
     public function show(int $id){
-        $this->db->query('SELECT * FROM `File` WHERE id = :id');
-        $this->db->bind(':id', $id);
-        $file = $this->db->single();
+        $file = $this->db->getById($id, 'File');
         if ($file) {
             var_dump(['file-info' => $file]);
         } else {
@@ -65,14 +65,15 @@ class File
 //            $newFilePath = 'uploads/' . $srcFileName;
 
             if (!move_uploaded_file($file['tmp_name'], $newFilePath)) {
-                $error = 'Ошибка при загрузке файла';
+                echo 'Ошибка при загрузке файла';
             } else {
                 $result = 'http://cloud-storage.local/uploads/' . $srcFileName;
                 // запись в бд
-                $this->db->query('INSERT INTO `File` (name, path, user_owner_id) VALUES(:name, :path, :user_owner_id)');
+                $this->db->query('INSERT INTO `File` (name, path, user_owner_id, extension) VALUES(:name, :path, :user_owner_id, :extension)');
                 $this->db->bind(":name", $srcFileName);
                 $this->db->bind(":path", $pathInDb);
                 $this->db->bind(":user_owner_id",  $this->ownerId);
+                $this->db->bind(":extension", $extension);
 
                 if ($this->db->execute()) {
                     echo 'Файл успешно загружен';
@@ -84,17 +85,53 @@ class File
         }
     }
 
-    // TODO
     public function update($id) {
+        parse_str(file_get_contents('php://input'), $_PUT);
+        var_dump(['$_PUT'=>$_PUT]);
+        $userFileName = trim($_PUT['file_name']);
+        $userFileDirectory = 'uploads/';
 
+        if (!empty(trim($_PUT['directory']))) {
+            $userFileDirectory = 'uploads/' .trim($_PUT['directory']) .'/';
+        }
+
+        if (!empty($userFileName)) {
+            $file = $this->db->getById($id, 'File');
+            if ($file && is_dir( $userFileDirectory)) {
+                var_dump(['$file'=>$file]);
+                $path = $file->path . $file->name;
+                if (file_exists($path)) {
+                    var_dump(['$path'=>$path, 'to'=>$userFileDirectory . trim($_PUT['file_name'])]);
+                 //   if (!move_uploaded_file($path, $userFileDirectory . trim($_PUT['file_name'])) ){
+                       if (!rename($path, $userFileDirectory . trim($_PUT['file_name']) . '.' .$file->extension)){
+                        echo 'Ошибка при перемещении файла';
+
+                    } else {
+                        // запись в бд
+                        $this->db->query('UPDATE File SET name = :name, path = :path WHERE id = :id');
+                        $this->db->bind(':id', $id);
+                        $this->db->bind(":name", trim($_PUT['file_name']) . '.' .$file->extension);
+                        $this->db->bind(":path", $userFileDirectory);
+                       // $this->db->bind(":user_owner_id",  $this->ownerId);
+
+                        if ($this->db->execute()) {
+                            echo 'Файл успешно изменен';
+                        } else {
+                            echo 'Что-то пошло не так';
+                        }
+                    }
+                } else {
+                    echo "Нет такого файла";
+                }
+            } else {
+                echo "Нет такой папки";
+            }
+        }
     }
 
     public function delete($id)
     {
-        $this->db->query('SELECT * FROM `File` WHERE id = :id');
-        $this->db->bind(':id', $id);
-        $file = $this->db->single();
-
+        $file = $this->db->getById($id, 'File');
         if ($file) {
             $path = $file->path . $file->name;
             if (file_exists($path)) {
@@ -109,11 +146,9 @@ class File
                 } else {
                     "Ошибка";
                 }
-
             } else {
                 echo "Файла не существует";
             }
-
         } else {
             echo "Нет данных о файле";
         }
