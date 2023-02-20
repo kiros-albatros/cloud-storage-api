@@ -16,6 +16,6 @@ return [
         'file/{id}' => ['GET' => 'File::show()', 'PUT' => 'File::update()', 'DELETE' => 'File::delete()'],
 
         'directory/' => ['POST' => 'File::addDirectory()'],
-        'directory/{id}'=>['GET' => 'File::infoDirectory()', 'DELETE' => 'File::deleteDirectory()']
+        'directory/{id}'=>['GET' => 'File::infoDirectory()', 'PUT'=>'File::renameDirectory()', 'DELETE' => 'File::deleteDirectory()']
         ]
 ];
