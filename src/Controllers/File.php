@@ -31,7 +31,11 @@ class File
     {
         $file = $this->db->getById($id, 'File');
         if ($file) {
-            var_dump(['file-info' => $file]);
+            if ($file->user_owner_id === $this->ownerId) {
+                var_dump(['file-info' => $file]);
+            } else {
+                echo "У вас нет прав на этот файл";
+            }
         } else {
             echo 'smth went wrong';
         }
@@ -110,7 +114,7 @@ class File
                     $fromFileDirectory = 'uploads/' . $file->name;
                 }
                 var_dump(['$fromFileDirectory'=>$fromFileDirectory]);
-                if (file_exists($fromFileDirectory)) {
+                if (file_exists($fromFileDirectory) && $file->user_owner_id === $this->ownerId) {
                     var_dump(['$fromFileDirectory' => $fromFileDirectory, 'to' => $toFileDirectory . trim($_PUT['file_name'])]);
                     //   if (!move_uploaded_file($path, $userFileDirectory . trim($_PUT['file_name'])) ){
                     if (!rename($fromFileDirectory, $toFileDirectory . trim($_PUT['file_name']) . '.' . $file->extension)) {
@@ -145,8 +149,9 @@ class File
             $path = $file->path . $file->name;
             if (file_exists($path)) {
                 if (unlink($path)) {
-                    $this->db->query('DELETE FROM File WHERE id = :id');
+                    $this->db->query('DELETE FROM File WHERE id = :id AND user_owner_id = :user_owner_id');
                     $this->db->bind(':id', $id);
+                    $this->db->bind(':user_owner_id', $this->ownerId);
                     if ($this->db->execute()) {
                         echo 'Файл удалён';
                     } else {
@@ -240,10 +245,19 @@ class File
         }
     }
 
+    // дописать проверку на существование папки
     public function deleteDirectory($id)
     {
         $path = 'uploads/' . $id;
-        $this->RDir($path);
 
+        $this->db->query('DELETE FROM `File` WHERE directory = :directory AND user_owner_id = :user_owner_id');
+        $this->db->bind(':directory', $id);
+        $this->db->bind(':user_owner_id', $this->ownerId);
+        if ($this->db->execute()) {
+            echo 'deleted';
+            $this->RDir($path);
+        } else {
+            echo 'Что-то пошло не так';
+        }
     }
 }
