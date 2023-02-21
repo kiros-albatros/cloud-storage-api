@@ -2,8 +2,8 @@
 
 function autoload($className)
 {
-    if (file_exists('src/Controllers/' . $className . '.php')) {
-        require_once 'src/Controllers/' . $className . '.php';
+    if (file_exists('./src/base/' . $className . '.php')) {
+        require_once './src/base/' . $className . '.php';
     }
 }
 

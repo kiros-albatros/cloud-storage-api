@@ -1,7 +1,6 @@
 <?php
 
-return [
-    'routes' =>[
+const ROUTES = [
         ''=> ['GET' => 'MainController::main()'],
         'user/{id}' => ['GET' => 'User::show()', 'PUT' => 'User::update()', 'DELETE' => 'User::delete()'],
         'user/' => ['GET' => 'User::list()', 'POST' => 'User::add()'],
@@ -17,5 +16,4 @@ return [
 
         'directory/' => ['POST' => 'File::addDirectory()'],
         'directory/{id}'=>['GET' => 'File::infoDirectory()', 'PUT'=>'File::renameDirectory()', 'DELETE' => 'File::deleteDirectory()']
-        ]
 ];

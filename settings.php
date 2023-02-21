@@ -8,13 +8,3 @@ const DB_OPTIONS = array(
     PDO::ATTR_PERSISTENT => true,
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 );
-
-return [
-    'db' => [
-        'host' => DB_HOST,
-        'dbname' => DB_NAME,
-        'user' => DB_USER,
-        'password' => DB_PASS,
-        'options'=>DB_OPTIONS
-    ]
-];

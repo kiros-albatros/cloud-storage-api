@@ -8,15 +8,13 @@ class Db
 
     public function __construct()
     {
-        $dbData = (require __DIR__ . '/../../settings.php')['db'];
-
         try {
             $this->pdo = new \PDO(
-                'mysql:host=' . $dbData['host'] . ';
-            dbname=' . $dbData['dbname'],
-                $dbData['user'],
-                $dbData['password'],
-                $dbData['options']
+                'mysql:host=' . DB_HOST . ';
+            dbname=' . DB_NAME,
+                DB_USER,
+                DB_PASS,
+                DB_OPTIONS
             );
             $this->pdo->exec('SET NAMES UTF8');
         } catch (PDOException $e) {
@@ -26,14 +24,16 @@ class Db
     }
 
     // Prepare statement with query
-    public function query($sql){
+    public function query($sql)
+    {
         $this->stmt = $this->pdo->prepare($sql);
     }
 
     // Bind values
-    public function bind($param, $value, $type = null){
-        if(is_null($type)){
-            switch(true){
+    public function bind($param, $value, $type = null)
+    {
+        if (is_null($type)) {
+            switch (true) {
                 case is_int($value):
                     $type = PDO::PARAM_INT;
                     break;
@@ -47,28 +47,30 @@ class Db
                     $type = PDO::PARAM_STR;
             }
         }
-
         $this->stmt->bindValue($param, $value, $type);
     }
 
     // Execute the prepared statement
-    public function execute(){
+    public function execute()
+    {
         return $this->stmt->execute();
     }
 
     // Get result set as array of objects
-    public function resultSet(){
+    public function resultSet()
+    {
         $this->execute();
         return $this->stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
     // Get single record as object
-    public function single(){
+    public function single()
+    {
         $this->execute();
         return $this->stmt->fetch(PDO::FETCH_OBJ);
     }
 
-    public function getById($id, $tableName)
+    public function getById($id, $tableName): bool
     {
         $this->query("SELECT * FROM `{$tableName}` WHERE id = :id");
         $this->bind(':id', $id);
