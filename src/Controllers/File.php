@@ -2,7 +2,7 @@
 
 //require_once '../Models/File.php';
 
-class File
+class File extends Controller
 {
     private int $ownerId;
     private Db $db;

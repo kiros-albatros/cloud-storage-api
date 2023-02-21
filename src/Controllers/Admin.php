@@ -1,6 +1,6 @@
 <?php
 
-class Admin extends User
+class Admin extends UserModel
 {
     public function usersList(){
         if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {

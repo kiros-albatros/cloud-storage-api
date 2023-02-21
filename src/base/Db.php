@@ -70,7 +70,7 @@ class Db
         return $this->stmt->fetch(PDO::FETCH_OBJ);
     }
 
-    public function getById($id, $tableName): bool
+    public function getById($id, $tableName)
     {
         $this->query("SELECT * FROM `{$tableName}` WHERE id = :id");
         $this->bind(':id', $id);
@@ -78,6 +78,7 @@ class Db
         if ($item) {
             return $item;
         } else {
+            echo "Элемент не найден";
             return false;
         }
     }

@@ -1,21 +1,18 @@
 <?php
 
-class User
+class User extends Controller
 {
-    private Db $db;
+    protected $userModel;
 
     public function __construct()
     {
-        $this->db = new Db();
+        $this->userModel = $this->model('UserModel');
     }
 
     public function reset_password()
     {
         if (!empty($_SESSION['user_email'])) {
-            $this->db->query('SELECT * FROM `User` WHERE email = :email');
-            $this->db->bind(':email', $_SESSION['user_email']);
-            $user = $this->db->single();
-
+            $user = $this->userModel->findUserByEmail($_SESSION['user_email']);
             if ($user) {
                 $subject = 'Сброс пароля';
                 $body = 'Перейдите по ссылке для сброса пароля ...';
@@ -51,9 +48,7 @@ class User
                 'password' => trim($_POST['password']),
             ];
 
-            $this->db->query('SELECT * FROM `User` WHERE email = :email');
-            $this->db->bind(':email', $data['email']);
-            $user = $this->db->single();
+            $user = $this->userModel->findUserByEmail($data['email']);
 
             if ($user) {
                 if ($user->password === $data['password']) {
@@ -65,7 +60,7 @@ class User
                     echo "Неверный пароль";
                 }
             } else {
-                echo "Пользователя с таким email не существует";
+                echo "Пользователь с таким email не существует";
             }
         }
     }
@@ -81,51 +76,36 @@ class User
     // GET /user/ Получить список пользователей (массив)
     public function list()
     {
-        $this->db->query('SELECT email FROM `User`;');
-        $users = $this->db->resultSet();
-        var_dump(['users' => $users]);
+        $users = $this->userModel->findAllUsers();
+        if ($users) {
+            var_dump(['users' => $users]);
+        }
     }
 
 //     GET /users/{id} Получить JSON-объект с информацией о конкретном пользователе
     public function show(int $id)
     {
-        $user = $this->db->getById($id, 'User');
+        $user = $this->userModel->findOneUser($id);
         if ($user) {
             echo json_encode($user);
-        } else {
-            echo 'smth went wrong';
         }
     }
 
     // POST /user/ Добавить пользователя
     public function add()
     {
-        if (!empty($_POST['email']) && !empty($_POST['password'])) {
+        if (!empty(trim($_POST['email'])) && !empty(trim($_POST['password']))) {
             $data = [
                 'email' => trim($_POST['email']),
                 'password' => trim($_POST['password']),
             ];
-
-            $this->db->query('SELECT * FROM `User` WHERE email = :email');
-            $this->db->bind(':email', $data['email']);
-            $user = $this->db->single();
+            $user = $this->userModel->findUserByEmail($data['email']);
             if ($user) {
                 echo "Пользователь с такой почтой уже существует";
                 return;
             }
-
-            $this->db->query('INSERT INTO `User` (email, password, role, auth_token) VALUES(:email, :password, :role, :auth_token)');
-            $this->db->bind(":email", $data['email']);
-            $this->db->bind(":password", $data['password']);
-            $this->db->bind(":role", 'user');
-            $authToken = sha1(random_bytes(100)) . sha1(random_bytes(100));
-            $this->db->bind(":auth_token", $authToken);
-
-            if ($this->db->execute()) {
-                echo 'Пользователь успешно создан';
-            } else {
-                echo 'Что-то пошло не так';
-            }
+            $data['authToken'] = sha1(random_bytes(100)) . sha1(random_bytes(100));
+            $this->userModel->addUser($data);
         } else {
             echo "Заполните поля";
         }
@@ -135,45 +115,20 @@ class User
     public function update(int $id)
     {
         parse_str(file_get_contents('php://input'), $_PUT);
-        if (!empty($_PUT['email']) && !empty($_PUT['password'])) {
+        if (!empty(trim($_PUT(['email'])) && !empty(trim($_PUT['password'])))) {
             $data = [
                 'email' => trim($_PUT['email']),
                 'password' => trim($_PUT['password']),
             ];
-            $this->db->query('SELECT * FROM `User` WHERE id = :id');
-            $this->db->bind(':id', $id);
-
-            if ($this->db->single()) {
-                var_dump(['user-to-update' => $this->db->single()]);
-            } else {
-                echo 'Что-то пошло не так';
-            }
-            $this->db->query('UPDATE User SET email = :email, password = :password WHERE id = :id');
-            $this->db->bind(':id', $id);
-            $this->db->bind(":email", $data['email']);
-            $this->db->bind(":password", $data['password']);
-//            $this->db->bind(":role", 'user');
-//            $this->db->bind(":auth_token", '123654789');
-
-            if ($this->db->execute()) {
-                echo 'updated';
-            } else {
-                echo 'Что-то пошло не так';
-            }
+            $this->userModel->updateUser($id, $data);
         } else {
             echo "Заполните поля";
         }
     }
 
     // DELETE /user/{id} Удалить пользователя
-    public function delete($id)
+    public function delete(int $id)
     {
-        $this->db->query('DELETE FROM User WHERE id = :id');
-        $this->db->bind(':id', $id);
-        if ($this->db->execute()) {
-            echo 'Пользователь удалён';
-        } else {
-            echo 'Что-то пошло не так';
-        }
+        $this->userModel->deleteUser($id);
     }
 }
