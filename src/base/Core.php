@@ -4,7 +4,7 @@ class Core
 {
     protected string $currentController = 'MainController';
     protected string $currentMethod = 'main';
-    protected $params = '';
+    protected array $params = [];
     protected bool $isRouteFound = false;
 
     public function __construct()
@@ -12,10 +12,8 @@ class Core
         $uri = $_GET['route'] ?? '';
         $method = $_POST['_method'] ?? $_SERVER['REQUEST_METHOD'];
         $controllerAndAction = $this->route($uri, $method);
-      //  var_dump(['$controllerAndAction' => $controllerAndAction]);
 
         if (file_exists('src/Controllers/' . $controllerAndAction['className'] . '.php')) {
-         //   echo "exists \n";
             $this->currentController = $controllerAndAction['className'];
         }
 
@@ -27,11 +25,7 @@ class Core
 
         $this->params = $controllerAndAction['arg'];
 
-        $controller = new $this->currentController();
-        $actionName = $this->currentMethod;
-        $controller->$actionName($this->params);
-
-        //  call_user_func_array([$this->currentController, $this->currentMethod], $this->params);
+        call_user_func_array([new $this->currentController, $this->currentMethod], $this->params);
     }
 
     public function route($uri, $method)
@@ -39,6 +33,8 @@ class Core
         foreach (ROUTES as $urlItem => $controllerAndAction) {
             $pattern = '~^' . $urlItem . '$~';
             $pattern = str_replace('{id}', '([0-9]{1,})', $pattern);
+            $pattern = str_replace('{email}', '(.{1,})', $pattern);
+            $pattern = str_replace('{user_id}', '([0-9]{1,})', $pattern);
             preg_match($pattern, $uri, $matches);
             if (!empty($matches)) {
                 foreach (ROUTES[$urlItem] as $method_item => $action) {
@@ -47,10 +43,15 @@ class Core
                         $arr = explode("::", $action);
                         $className = $arr[0];
                         $methodName = substr($arr[1], 0, -2);
-                        if (!empty ($matches[1])) {
-                            $data = ['className' => $className, 'methodName' => $methodName, 'arg' => $matches[1]];
+
+                        if (count($matches)>1) {
+                           // var_dump(['matches'=>$matches]);
+                            array_shift($matches);
+                           // var_dump(['el'=>$matches]);
+                            $arg = array_values($matches);
+                            $data = ['className' => $className, 'methodName' => $methodName, 'arg' => $arg];
                         } else {
-                            $data = ['className' => $className, 'methodName' => $methodName, 'arg' => ''];
+                            $data = ['className' => $className, 'methodName' => $methodName, 'arg' => []];
                         }
                         return $data;
                         break;
@@ -59,7 +60,7 @@ class Core
             }
         }
         if ($this->isRouteFound === false) {
-            return $data = ['className' => 'MainController', 'methodName' => 'notFound', 'arg' => ''];
+            return $data = ['className' => 'MainController', 'methodName' => 'notFound', 'arg' => []];
         }
     }
 }

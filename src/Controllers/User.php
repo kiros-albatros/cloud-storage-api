@@ -9,6 +9,12 @@ class User extends Controller
         $this->userModel = $this->model('UserModel');
     }
 
+    public function search($email)
+    {
+        $user = $this->userModel->findUserByEmail($email);
+        var_dump($user);
+    }
+
     public function reset_password()
     {
         if (!empty($_SESSION['user_email'])) {

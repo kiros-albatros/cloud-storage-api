@@ -8,6 +8,8 @@ const ROUTES = [
         'user/logout' => ['GET' => 'User::logout()'],
         'user/reset_password' => ['GET' => 'User::reset_password()'],
 
+        'user/search/{email}'=> ['GET' => 'User::search()'],
+
         'admin/user' => ['GET' => 'Admin::usersList()'],
         'admin/user/{id}' => ['GET' => 'Admin::showUser()', 'PUT' => 'Admin::updateUser()', 'DELETE' => 'Admin::deleteUser()'],
 
@@ -15,5 +17,8 @@ const ROUTES = [
         'file/{id}' => ['GET' => 'File::show()', 'PUT' => 'File::update()', 'DELETE' => 'File::delete()'],
 
         'directory/' => ['POST' => 'File::addDirectory()'],
-        'directory/{id}'=>['GET' => 'File::infoDirectory()', 'PUT'=>'File::renameDirectory()', 'DELETE' => 'File::deleteDirectory()']
+        'directory/{id}'=>['GET' => 'File::infoDirectory()', 'PUT'=>'File::renameDirectory()', 'DELETE' => 'File::deleteDirectory()'],
+
+        'file/share/{id}'=>['GET' => 'File::shareList()'],
+        'file/share/{id}/{user_id}'=>['PUT' => 'File::shareFile()', 'DELETE' => 'File::banFile()'],
 ];

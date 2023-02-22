@@ -9,6 +9,7 @@ class File extends Controller
     public function __construct()
     {
         $this->fileModel = $this->model('FileModel');
+        $this->shareModel = $this->model('ShareModel');
 
         //  $this->ownerId = $_SESSION['user_id'];
         // временная заглушка без сессии
@@ -203,5 +204,17 @@ class File extends Controller
                 echo 'Что-то пошло не так';
             }
         }
+    }
+
+    // SHARE
+
+    public function shareList($id) {
+    $shareList = $this->shareModel->shareList($id);
+        var_dump(['shareList'=>$shareList]);
+    }
+
+    public function shareFile($fileId, $userId) {
+        var_dump(['$fileId'=>$fileId, '$userId'=>$userId]);
+        echo 'shareFile';
     }
 }
