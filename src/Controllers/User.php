@@ -18,9 +18,7 @@ class User extends Controller
                 $body = 'Перейдите по ссылке для сброса пароля ...';
                 try {
                     if (mail($user->email, $subject, $body, 'Content-Type: text/html; charset=UTF-8')) {
-                        {
-                            echo "sent";
-                        }
+                        { echo "sent"; }
                     }
                 } catch (Exception $e) {
                     echo "Поломка";
@@ -73,7 +71,6 @@ class User extends Controller
         session_destroy();
     }
 
-    // GET /user/ Получить список пользователей (массив)
     public function list()
     {
         $users = $this->userModel->findAllUsers();
@@ -82,7 +79,6 @@ class User extends Controller
         }
     }
 
-//     GET /users/{id} Получить JSON-объект с информацией о конкретном пользователе
     public function show(int $id)
     {
         $user = $this->userModel->findOneUser($id);
@@ -91,7 +87,6 @@ class User extends Controller
         }
     }
 
-    // POST /user/ Добавить пользователя
     public function add()
     {
         if (!empty(trim($_POST['email'])) && !empty(trim($_POST['password']))) {
@@ -111,7 +106,6 @@ class User extends Controller
         }
     }
 
-    // PUT /user/ Обновить пользователя
     public function update(int $id)
     {
         parse_str(file_get_contents('php://input'), $_PUT);
@@ -126,7 +120,6 @@ class User extends Controller
         }
     }
 
-    // DELETE /user/{id} Удалить пользователя
     public function delete(int $id)
     {
         $this->userModel->deleteUser($id);
