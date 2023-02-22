@@ -1,6 +1,6 @@
 <?php
 
-class Admin extends UserModel
+class Admin extends User
 {
     public function usersList(){
         if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
@@ -20,7 +20,7 @@ class Admin extends UserModel
         }
     }
 
-    public function updateUser(int $id) {
+    public function updateUser($id) {
         if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
             $this->update($id);
             echo "admin updates user";
@@ -29,7 +29,7 @@ class Admin extends UserModel
         }
     }
 
-    public function deleteUser(int $id) {
+    public function deleteUser($id) {
         if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
             $this->delete($id);
             echo "admin deletes user";

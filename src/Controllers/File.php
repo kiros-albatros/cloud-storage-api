@@ -213,8 +213,10 @@ class File extends Controller
         var_dump(['shareList'=>$shareList]);
     }
 
+    // todo дописать проверку на существование файла и юзера
     public function shareFile($fileId, $userId) {
         var_dump(['$fileId'=>$fileId, '$userId'=>$userId]);
         echo 'shareFile';
+        $this->shareModel->shareFileInDb($fileId,  $userId);
     }
 }
