@@ -10,6 +10,7 @@ class File extends Controller
     {
         $this->fileModel = $this->model('FileModel');
         $this->shareModel = $this->model('ShareModel');
+        $this->userModel = $this->model('UserModel');
 
         //  $this->ownerId = $_SESSION['user_id'];
         // временная заглушка без сессии
@@ -213,10 +214,28 @@ class File extends Controller
         var_dump(['shareList'=>$shareList]);
     }
 
-    // todo дописать проверку на существование файла и юзера
     public function shareFile($fileId, $userId) {
-        var_dump(['$fileId'=>$fileId, '$userId'=>$userId]);
-        echo 'shareFile';
-        $this->shareModel->shareFileInDb($fileId,  $userId);
+      //  var_dump(['$fileId'=>$fileId, '$userId'=>$userId]);
+      //  echo 'shareFile';
+        $file = $this->fileModel->findOneFile($fileId, $this->ownerId);
+        $user = $this->userModel->findOneUser($userId);
+        var_dump(['user'=>$user, 'file'=>$file]);
+        if ($file && $user) {
+            $this->shareModel->shareFileInDb($fileId,  $userId);
+        } else {
+            echo "Такого файла или пользователя не существует";
+        }
+    }
+
+    public function unshareFile($fileId, $userId) {
+        //  var_dump(['$fileId'=>$fileId, '$userId'=>$userId]);
+        //  echo 'shareFile';
+        $file = $this->fileModel->findOneFile($fileId, $this->ownerId);
+        $user = $this->userModel->findOneUser($userId);
+        if ($file && $user) {
+            $this->shareModel->unshareFileInDb($fileId,  $userId);
+        } else {
+            echo "Такого файла или пользователя не существует";
+        }
     }
 }

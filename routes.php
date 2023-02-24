@@ -20,5 +20,5 @@ const ROUTES = [
         'directory/{id}'=>['GET' => 'File::infoDirectory()', 'PUT'=>'File::renameDirectory()', 'DELETE' => 'File::deleteDirectory()'],
 
         'file/share/{id}'=>['GET' => 'File::shareList()'],
-        'file/share/{id}/{user_id}'=>['PUT' => 'File::shareFile()', 'DELETE' => 'File::banFile()'],
+        'file/share/{id}/{user_id}'=>['PUT' => 'File::shareFile()', 'DELETE' => 'File::unshareFile()'],
 ];

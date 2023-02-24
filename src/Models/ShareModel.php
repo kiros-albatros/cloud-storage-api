@@ -35,4 +35,21 @@ class ShareModel
             echo 'Что-то пошло не так';
         }
     }
+
+    public function unshareFileInDb($fileId,  $userId) {
+        $this->db->query("SELECT * FROM `File_accesses` WHERE file_id = :file_id AND user_id = :user_id");
+        $this->db->bind(':file_id', $fileId);
+        $this->db->bind(':user_id', $userId);
+        $existingRow = $this->db->single();
+        if ($existingRow) {
+            $this->db->query("DELETE FROM File_accesses WHERE file_id = :file_id AND user_id = :user_id");
+            $this->db->bind(':file_id', $fileId);
+            $this->db->bind(':user_id', $userId);
+            if ($this->db->execute()) {
+                echo 'Прекращен доступ';
+            } else {
+                echo 'Что-то пошло не так';
+            }
+        }
+    }
 }

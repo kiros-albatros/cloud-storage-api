@@ -2,6 +2,13 @@
 
 class Admin extends User
 {
+    protected $userModel;
+
+    public function __construct()
+    {
+        $this->userModel = $this->model('UserModel');
+    }
+
     public function usersList(){
         if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
             $this->list();
