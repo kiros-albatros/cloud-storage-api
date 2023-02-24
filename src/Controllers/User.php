@@ -1,5 +1,6 @@
 <?php
 
+
 class User extends Controller
 {
     protected $userModel;
@@ -68,10 +69,15 @@ class User extends Controller
 
     public function logout()
     {
-        unset($_SESSION['user_id']);
-        unset($_SESSION['user_email']);
-        unset($_SESSION['user_role']);
-        session_destroy();
+        if (isset($_SESSION['user_id'])) {
+            unset($_SESSION['user_id']);
+            unset($_SESSION['user_email']);
+            unset($_SESSION['user_role']);
+            session_destroy();
+        } else {
+            echo 'Вы не авторизованы';
+        }
+
     }
 
     public function list()
@@ -112,7 +118,8 @@ class User extends Controller
     public function update(int $id)
     {
         parse_str(file_get_contents('php://input'), $_PUT);
-        if (!empty(trim($_PUT(['email'])) && !empty(trim($_PUT['password'])))) {
+        var_dump($_PUT);
+        if (!empty(trim($_PUT['email']) && !empty(trim($_PUT['password'])))) {
             $data = [
                 'email' => trim($_PUT['email']),
                 'password' => trim($_PUT['password']),
@@ -128,3 +135,4 @@ class User extends Controller
         $this->userModel->deleteUser($id);
     }
 }
+

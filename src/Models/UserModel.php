@@ -65,7 +65,7 @@ class UserModel
             $this->db->bind(":email", $data['email']);
             $this->db->bind(":password", $data['password']);
             if ($this->db->execute()) {
-                echo 'updated';
+                echo 'Обновлено';
             } else {
                 echo 'Что-то пошло не так';
             }

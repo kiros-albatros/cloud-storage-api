@@ -14,9 +14,9 @@ class File extends Controller
         $this->shareModel = $this->model('ShareModel');
         $this->userModel = $this->model('UserModel');
 
-        //  $this->ownerId = $_SESSION['user_id'];
+        $this->ownerId = $_SESSION['user_id'];
         // временная заглушка без сессии
-        $this->ownerId = 4;
+       // $this->ownerId = 4;
     }
 
     public function list()
@@ -33,12 +33,18 @@ class File extends Controller
     public function show($id)
     {
         $file = $this->fileModel->findOneFile($id, $this->ownerId);
+        $accessForFile = $this->shareModel->checkAccess($id, $this->ownerId);
         if ($file) {
             var_dump($file);
-        } else {
+        } elseif ($accessForFile) {
+            var_dump($accessForFile);
+        }
+        else {
             echo 'Такого файла не существует или у вас нет к нему доступа';
         }
     }
+
+    // поля $_FILES['file'], $_POST['file_name'], $_POST['directory']
 
     public function add()
     {
@@ -52,14 +58,17 @@ class File extends Controller
                 $srcFileName = trim($_POST['file_name']) . '.' . $extension;
             }
 
-            if (!empty(trim($_POST['directory']))) {
-                if (is_dir(self::$uploadsDir . trim($_POST['directory']))) {
-                    $newFilePath = self::$uploadsDir . trim($_POST['directory']) . '/' . $srcFileName;
-                    $pathInDb = trim($_POST['directory']) . '/';
-                } else {
-                    echo "Такой папки не существует";
-                    return;
-                }
+            if (isset($_POST['directory'])) {
+                if (!empty(trim($_POST['directory']))) {
+                    if (is_dir(self::$uploadsDir . trim($_POST['directory']))) {
+                        $newFilePath = self::$uploadsDir . trim($_POST['directory']) . '/' . $srcFileName;
+                        $pathInDb = trim($_POST['directory']) . '/';
+                    } else {
+                        echo "Такой папки не существует";
+                        return;
+                    }
+            }
+
             } else {
                 $newFilePath = 'uploads/' . $srcFileName;
             }
@@ -229,6 +238,8 @@ class File extends Controller
     {
         $file = $this->fileModel->findOneFile($fileId, $this->ownerId);
         $user = $this->userModel->findOneUser($userId);
+        var_dump($file);
+        var_dump($user);
         if ($file && $user) {
             $this->shareModel->unshareFileInDb($fileId, $userId);
         } else {

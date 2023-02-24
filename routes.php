@@ -10,7 +10,7 @@ const ROUTES = [
 
     'user/search/{email}' => ['GET' => 'User::search()'],
 
-    'admin/user' => ['GET' => 'Admin::usersList()'],
+    'admin/user/' => ['GET' => 'Admin::usersList()'],
     'admin/user/{id}' => ['GET' => 'Admin::showUser()', 'PUT' => 'Admin::updateUser()', 'DELETE' => 'Admin::deleteUser()'],
 
     'file/' => ['GET' => 'File::list()', 'POST' => 'File::add()'],

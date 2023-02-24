@@ -9,6 +9,13 @@ class ShareModel
         $this->db = new Db;
     }
 
+    public function checkAccess($fileId, $userId){
+        $this->db->query("SELECT * FROM `File_accesses` WHERE file_id = :file_id AND user_id = :user_id");
+        $this->db->bind(':file_id', $fileId);
+        $this->db->bind(':user_id', $userId);
+        return $this->db->single();
+    }
+
     public function shareList($file_id)
     {
         $this->db->query('SELECT user_email FROM `File_accesses` WHERE file_id = :file_id');

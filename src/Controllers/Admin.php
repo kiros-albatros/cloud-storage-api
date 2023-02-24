@@ -1,5 +1,7 @@
 <?php
 
+require_once("src/Controllers/User.php");
+
 class Admin extends User
 {
     protected $userModel;
