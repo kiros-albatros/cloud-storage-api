@@ -43,11 +43,8 @@ class Core
                         $arr = explode("::", $action);
                         $className = $arr[0];
                         $methodName = substr($arr[1], 0, -2);
-
-                        if (count($matches)>1) {
-                           // var_dump(['matches'=>$matches]);
+                        if (count($matches) > 1) {
                             array_shift($matches);
-                           // var_dump(['el'=>$matches]);
                             $arg = array_values($matches);
                             $data = ['className' => $className, 'methodName' => $methodName, 'arg' => $arg];
                         } else {

@@ -2,12 +2,9 @@
 
 class Controller
 {
-// Load model
-    public function model($model){
-        // Require model file
+    public function model($model)
+    {
         require_once 'src/Models/' . $model . '.php';
-
-        // Instatiate model
         return new $model();
     }
 }

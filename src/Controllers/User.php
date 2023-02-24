@@ -27,7 +27,7 @@ class User extends Controller
                         { echo "sent"; }
                     }
                 } catch (Exception $e) {
-                    echo "Поломка";
+                    echo "Не удалось отправить письмо";
                 }
             }
         }
@@ -39,7 +39,6 @@ class User extends Controller
         $_SESSION['user_id'] = $user->id;
         $_SESSION['user_email'] = $user->email;
         $_SESSION['user_role'] = $user->role;
-        //  $_SESSION['user_auth_token'] = $user->auth_token;
         $session_id = sha1(random_bytes(100)) . sha1(random_bytes(100));
         setcookie('session_id', $session_id, 0, '/', '', false, true);
     }
@@ -56,8 +55,6 @@ class User extends Controller
 
             if ($user) {
                 if ($user->password === $data['password']) {
-//                    $token = sha1(random_bytes(100)) . sha1(random_bytes(100));
-//                    $user->auth_token = $token;
                     $this->createUserSession($user);
                     echo "Добро пожаловать";
                 } else {
@@ -105,7 +102,7 @@ class User extends Controller
                 echo "Пользователь с такой почтой уже существует";
                 return;
             }
-            $data['authToken'] = sha1(random_bytes(100)) . sha1(random_bytes(100));
+           // $data['authToken'] = sha1(random_bytes(100)) . sha1(random_bytes(100));
             $this->userModel->addUser($data);
         } else {
             echo "Заполните поля";

@@ -23,13 +23,11 @@ class Db
         }
     }
 
-    // Prepare statement with query
     public function query($sql)
     {
         $this->stmt = $this->pdo->prepare($sql);
     }
 
-    // Bind values
     public function bind($param, $value, $type = null)
     {
         if (is_null($type)) {
@@ -50,20 +48,17 @@ class Db
         $this->stmt->bindValue($param, $value, $type);
     }
 
-    // Execute the prepared statement
     public function execute()
     {
         return $this->stmt->execute();
     }
 
-    // Get result set as array of objects
     public function resultSet()
     {
         $this->execute();
         return $this->stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    // Get single record as object
     public function single()
     {
         $this->execute();
@@ -78,7 +73,6 @@ class Db
         if ($item) {
             return $item;
         } else {
-            echo "Элемент не найден";
             return false;
         }
     }

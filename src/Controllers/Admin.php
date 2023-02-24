@@ -9,39 +9,39 @@ class Admin extends User
         $this->userModel = $this->model('UserModel');
     }
 
-    public function usersList(){
+    public function usersList()
+    {
         if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
             $this->list();
-            echo "admin list";
         } else {
-            echo 'only admins can do it';
+            echo 'Требуются права администратора';
         }
     }
 
-    public function showUser(int $id) {
+    public function showUser(int $id)
+    {
         if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
             $this->show($id);
-            echo "admin user info";
         } else {
-            echo 'only admins can do it';
+            echo 'Требуются права администратора';
         }
     }
 
-    public function updateUser($id) {
+    public function updateUser($id)
+    {
         if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
             $this->update($id);
-            echo "admin updates user";
         } else {
-            echo 'only admins can do it';
+            echo 'Требуются права администратора';
         }
     }
 
-    public function deleteUser($id) {
+    public function deleteUser($id)
+    {
         if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
             $this->delete($id);
-            echo "admin deletes user";
         } else {
-            echo 'only admins can do it';
+            echo 'Требуются права администратора';
         }
     }
 

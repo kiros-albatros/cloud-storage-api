@@ -9,6 +9,6 @@ class MainController
 
     public function notFound()
     {
-        echo 'notFound 404';
+        echo '404 NOT FOUND';
     }
 }

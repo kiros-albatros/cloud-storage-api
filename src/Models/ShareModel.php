@@ -4,7 +4,8 @@ class ShareModel
 {
     private Db $db;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->db = new Db;
     }
 
@@ -15,7 +16,8 @@ class ShareModel
         return $this->db->resultSet();
     }
 
-    public function shareFileInDb($fileId,  $userId) {
+    public function shareFileInDb($fileId, $userId)
+    {
         $this->db->query("SELECT * FROM `File_accesses` WHERE file_id = :file_id AND user_id = :user_id");
         $this->db->bind(':file_id', $fileId);
         $this->db->bind(':user_id', $userId);
@@ -36,7 +38,8 @@ class ShareModel
         }
     }
 
-    public function unshareFileInDb($fileId,  $userId) {
+    public function unshareFileInDb($fileId, $userId)
+    {
         $this->db->query("SELECT * FROM `File_accesses` WHERE file_id = :file_id AND user_id = :user_id");
         $this->db->bind(':file_id', $fileId);
         $this->db->bind(':user_id', $userId);

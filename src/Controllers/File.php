@@ -3,6 +3,8 @@
 class File extends Controller
 {
     protected $fileModel;
+    protected $shareModel;
+    protected $userModel;
     private int $ownerId;
     private static string $uploadsDir = 'uploads/';
 
@@ -21,7 +23,7 @@ class File extends Controller
     {
         $files = $this->fileModel->findAllFiles($this->ownerId);
         if ($files) {
-            var_dump(['files' => $files]);
+            var_dump($files);
         } else {
             echo "Нет файлов";
         }
@@ -31,9 +33,8 @@ class File extends Controller
     public function show($id)
     {
         $file = $this->fileModel->findOneFile($id, $this->ownerId);
-        var_dump(['id' => $id, 'ownerId' => $this->ownerId]);
         if ($file) {
-            var_dump(['file' => $file]);
+            var_dump($file);
         } else {
             echo 'Такого файла не существует или у вас нет к нему доступа';
         }
@@ -41,7 +42,6 @@ class File extends Controller
 
     public function add()
     {
-        //  var_dump(['files' => $_FILES]);
         if (!empty($_FILES['file'])) {
             $file = $_FILES['file'];
             $srcFileName = $file['name'];
@@ -65,7 +65,6 @@ class File extends Controller
             }
 
             if (file_exists($newFilePath)) {
-                // переделать на выкидывание ошибки
                 echo 'Файл с таким именем уже существует';
                 return;
             }
@@ -100,7 +99,6 @@ class File extends Controller
             var_dump(['$fromFileDirectory' => $fromFileDirectory]);
             if (file_exists($fromFileDirectory) && $file->user_owner_id === $this->ownerId) {
                 var_dump(['$fromFileDirectory' => $fromFileDirectory, 'to' => $toFileDirectory . trim($_PUT['file_name'])]);
-                //   if (!move_uploaded_file($path, $userFileDirectory . trim($_PUT['file_name'])) ){
                 if (!rename($fromFileDirectory, $toFileDirectory . trim($_PUT['file_name']) . '.' . $file->extension)) {
                     echo 'Ошибка при перемещении файла';
                 } else {
@@ -128,7 +126,7 @@ class File extends Controller
                 if (unlink($path)) {
                     $this->fileModel->deleteFile($id, $this->ownerId);
                 } else {
-                    "Ошибка";
+                    "Что-то пошло не так";
                 }
             } else {
                 echo "Файла не существует ";
@@ -144,7 +142,7 @@ class File extends Controller
     {
         if (file_exists("uploads/" . $id) and is_dir("uploads/" . $id)) {
             $files = array_diff(scandir("uploads/" . $id), array('.', '..'));
-            var_dump(['files in dir' => $files]);
+            var_dump(['files in directory' => $files]);
         } else {
             echo "Папка не найдена";
         }
@@ -164,7 +162,7 @@ class File extends Controller
             if (file_exists(self::$uploadsDir . $id) and is_dir(self::$uploadsDir . $id)) {
                 if (rename(self::$uploadsDir . $id, self::$uploadsDir . trim($_PUT['directory_name']))) {
                     // меняем в бд
-                   $this->fileModel->renameDirectoryInFiles($id, trim($_PUT['directory_name']));
+                    $this->fileModel->renameDirectoryInFiles($id, trim($_PUT['directory_name']));
                 } else {
                     echo "Не удалось переименовать";
                 }
@@ -209,31 +207,30 @@ class File extends Controller
 
     // SHARE
 
-    public function shareList($id) {
-    $shareList = $this->shareModel->shareList($id);
-        var_dump(['shareList'=>$shareList]);
+    public function shareList($id)
+    {
+        $shareList = $this->shareModel->shareList($id);
+        var_dump(['shareList' => $shareList]);
     }
 
-    public function shareFile($fileId, $userId) {
-      //  var_dump(['$fileId'=>$fileId, '$userId'=>$userId]);
-      //  echo 'shareFile';
+    public function shareFile($fileId, $userId)
+    {
         $file = $this->fileModel->findOneFile($fileId, $this->ownerId);
         $user = $this->userModel->findOneUser($userId);
-        var_dump(['user'=>$user, 'file'=>$file]);
+        var_dump(['user' => $user, 'file' => $file]);
         if ($file && $user) {
-            $this->shareModel->shareFileInDb($fileId,  $userId);
+            $this->shareModel->shareFileInDb($fileId, $userId);
         } else {
             echo "Такого файла или пользователя не существует";
         }
     }
 
-    public function unshareFile($fileId, $userId) {
-        //  var_dump(['$fileId'=>$fileId, '$userId'=>$userId]);
-        //  echo 'shareFile';
+    public function unshareFile($fileId, $userId)
+    {
         $file = $this->fileModel->findOneFile($fileId, $this->ownerId);
         $user = $this->userModel->findOneUser($userId);
         if ($file && $user) {
-            $this->shareModel->unshareFileInDb($fileId,  $userId);
+            $this->shareModel->unshareFileInDb($fileId, $userId);
         } else {
             echo "Такого файла или пользователя не существует";
         }

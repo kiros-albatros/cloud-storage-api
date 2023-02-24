@@ -4,18 +4,21 @@ class FileModel
 {
     private Db $db;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->db = new Db;
     }
 
-    public function findOneFile($id, $ownerId) {
+    public function findOneFile($id, $ownerId)
+    {
         $this->db->query("SELECT * FROM `File` WHERE id = :id AND user_owner_id = :user_owner_id");
         $this->db->bind(':id', $id);
         $this->db->bind(':user_owner_id', $ownerId);
         return $this->db->single();
     }
 
-    public function findAllFiles($ownerId) {
+    public function findAllFiles($ownerId)
+    {
         $this->db->query('SELECT name FROM `File` WHERE user_owner_id = :user_owner_id');
         $this->db->bind(':user_owner_id', $ownerId);
         return $this->db->resultSet();
@@ -35,7 +38,8 @@ class FileModel
         }
     }
 
-    public function updateFile($fileData) {
+    public function updateFile($fileData)
+    {
         $this->db->query('UPDATE File SET name = :name, directory = :directory WHERE id = :id');
         $this->db->bind(':id', $fileData['id']);
         $this->db->bind(":name", $fileData['name']);
@@ -59,7 +63,8 @@ class FileModel
         }
     }
 
-    public function deleteDirectory($id, $ownerId){
+    public function deleteDirectory($id, $ownerId)
+    {
         $this->db->query('DELETE FROM `File` WHERE directory = :directory AND user_owner_id = :user_owner_id');
         $this->db->bind(':directory', $id);
         $this->db->bind(':user_owner_id', $ownerId);
@@ -71,7 +76,8 @@ class FileModel
         }
     }
 
-    public function renameDirectoryInFiles($directory, $newDirectoryName) {
+    public function renameDirectoryInFiles($directory, $newDirectoryName)
+    {
         $this->db->query('SELECT * FROM `File` WHERE directory = :directory');
         $this->db->bind(':directory', $directory);
         $filesInDirectory = $this->db->resultSet();
