@@ -19,7 +19,7 @@ class File extends Controller
         $this->userModel = $this->model('UserModel');
 
         // временная заглушка без сессии
-        $this->userId = 4;
+        // $this->userId = 4;
 
         if (isset($_SESSION['user_id'])) {
             $this->userId = $_SESSION['user_id'];
