@@ -8,7 +8,8 @@ class File extends Controller
     protected $fileModel;
     protected $shareModel;
     protected $userModel;
-    private int $ownerId;
+    private int $userId;
+    private bool $isAdmin;
     private static string $uploadsDir = 'uploads/';
 
     public function __construct()
@@ -18,39 +19,51 @@ class File extends Controller
         $this->userModel = $this->model('UserModel');
 
         // временная заглушка без сессии
-        $this->ownerId = 4;
+        $this->userId = 4;
 
-        if(isset($_SESSION['user_id'])) {
-            $this->ownerId = $_SESSION['user_id'];
+        if (isset($_SESSION['user_id'])) {
+            $this->userId = $_SESSION['user_id'];
+        }
+
+        if (isset($_SESSION['user_role'])) {
+            if ($_SESSION['user_role'] === 'admin') {
+                $this->isAdmin = true;
+            }
+        } else {
+            $this->isAdmin = false;
         }
     }
 
     public function list()
     {
-        $files = $this->fileModel->findAllFiles($this->ownerId);
+        $files = $this->fileModel->findAllFiles($this->userId);
         if ($files) {
-           echo json_encode($files);
+            echo json_encode($files);
         } else {
             echo "Нет файлов";
         }
-
     }
 
     public function show($id)
     {
-        $file = $this->fileModel->findOneFile($id, $this->ownerId);
-        $accessForFile = $this->shareModel->checkAccess($id, $this->ownerId);
+        $file = $this->fileModel->findFileById($id);
+        $accessForFile = $this->shareModel->checkAccess($id, $this->userId);
         if ($file) {
-            echo json_encode($file);
-        } elseif ($accessForFile) {
-            echo json_encode($accessForFile);
+            if ($this->isAdmin) {
+                echo json_encode($file);
+            } elseif ($accessForFile) {
+                echo json_encode($file);
+            } elseif ($file->user_owner_id === $this->userId) {
+                echo json_encode($file);
+            } else {
+                echo 'У вас нет доступа к файлу';
+            }
         } else {
-            echo 'Такого файла не существует или у вас нет к нему доступа';
+            echo 'Такого файла не существует';
         }
     }
 
     // поля $_FILES['file'], $_POST['file_name'], $_POST['directory']
-
     public function add()
     {
         if (!empty($_FILES['file'])) {
@@ -65,15 +78,25 @@ class File extends Controller
 
             if (isset($_POST['directory'])) {
                 if (!empty(trim($_POST['directory']))) {
-                    if (is_dir(self::$uploadsDir . trim($_POST['directory']))) {
-                        $newFilePath = self::$uploadsDir . trim($_POST['directory']) . '/' . $srcFileName;
-                        $pathInDb = trim($_POST['directory']) . '/';
+                    $postDirName = trim($_POST['directory']);
+                    if (is_dir(self::$uploadsDir . $postDirName)) {
+                        if ($this->isAdmin) {
+                            $newFilePath = self::$uploadsDir . $postDirName . '/' . $srcFileName;
+                            $pathInDb = $postDirName . '/';
+                        } else {
+                            $dirInfo = $this->fileModel->getDirInfoByName($postDirName);
+                            if ($dirInfo) {
+                                if ($dirInfo->user_owner_id === $this->userId) {
+                                    $newFilePath = self::$uploadsDir . $postDirName . '/' . $srcFileName;
+                                    $pathInDb = $postDirName . '/';
+                                }
+                            }
+                        }
                     } else {
                         echo "Такой папки не существует";
                         return;
                     }
-            }
-
+                }
             } else {
                 $newFilePath = 'uploads/' . $srcFileName;
             }
@@ -87,7 +110,7 @@ class File extends Controller
                 echo 'Ошибка при загрузке файла';
             } else {
                 // запись в бд
-                $fileData = ['srcFileName' => $srcFileName, 'pathInDb' => $pathInDb, 'ownerId' => $this->ownerId, 'extension' => $extension];
+                $fileData = ['srcFileName' => $srcFileName, 'pathInDb' => $pathInDb, 'ownerId' => $this->userId, 'extension' => $extension];
                 $this->fileModel->addFile($fileData);
             }
         }
@@ -96,23 +119,38 @@ class File extends Controller
     public function update($id)
     {
         parse_str(file_get_contents('php://input'), $_PUT);
-        var_dump(['$_PUT' => $_PUT]);
+        //  var_dump(['$_PUT' => $_PUT]);
         $toFileDirectory = 'uploads/';
 
         if (!empty(trim($_PUT['directory']))) {
-            $toFileDirectory = 'uploads/' . trim($_PUT['directory']) . '/';
+            // проверить доступ к папке
+            $dirInfo = $this->fileModel->getDirInfoByName(trim($_PUT['directory']));
+            if ($dirInfo) {
+                if (($dirInfo->user_owner_id === $this->userId) || $this->isAdmin) {
+                    $toFileDirectory = 'uploads/' . trim($_PUT['directory']) . '/';
+                } else {
+                    echo 'У вас нет доступа к файлу';
+                    return;
+                }
+            }
+            // проверить доступ к папке
         }
-        $file = $this->fileModel->findOneFile($id, $this->ownerId);
+
+        if ($this->isAdmin) {
+            $file = $this->fileModel->findFileById($id);
+        } else {
+            $file = $this->fileModel->findOneFile($id, $this->userId);
+        }
         if ($file && is_dir($toFileDirectory)) {
-            var_dump(['$file' => $file]);
+            //   var_dump(['$file' => $file]);
             if (!empty($file->directory)) {
                 $fromFileDirectory = 'uploads/' . $file->directory . '/' . $file->name;
             } else {
                 $fromFileDirectory = 'uploads/' . $file->name;
             }
-            var_dump(['$fromFileDirectory' => $fromFileDirectory]);
-            if (file_exists($fromFileDirectory) && $file->user_owner_id === $this->ownerId) {
-                var_dump(['$fromFileDirectory' => $fromFileDirectory, 'to' => $toFileDirectory . trim($_PUT['file_name'])]);
+            //   var_dump(['$fromFileDirectory' => $fromFileDirectory]);
+            if (file_exists($fromFileDirectory)) {
+                //    var_dump(['$fromFileDirectory' => $fromFileDirectory, 'to' => $toFileDirectory . trim($_PUT['file_name'])]);
                 if (!rename($fromFileDirectory, $toFileDirectory . trim($_PUT['file_name']) . '.' . $file->extension)) {
                     echo 'Ошибка при перемещении файла';
                 } else {
@@ -131,14 +169,18 @@ class File extends Controller
 
     public function delete($id)
     {
-        $file = $this->fileModel->findOneFile($id, $this->ownerId);
-        var_dump($file);
+        if ($this->isAdmin) {
+            $file = $this->fileModel->findFileById($id);
+        } else {
+            $file = $this->fileModel->findOneFile($id, $this->userId);
+        }
+        //   var_dump($file);
         if ($file) {
             $path = self::$uploadsDir . $file->directory . $file->name;
-            var_dump($path);
+            //   var_dump($path);
             if (file_exists($path)) {
                 if (unlink($path)) {
-                    $this->fileModel->deleteFile($id, $this->ownerId);
+                    $this->fileModel->deleteFile($id);
                 } else {
                     "Что-то пошло не так";
                 }
@@ -154,11 +196,23 @@ class File extends Controller
 
     public function infoDirectory($id)
     {
-        if (file_exists("uploads/" . $id) and is_dir("uploads/" . $id)) {
-            $files = array_diff(scandir("uploads/" . $id), array('.', '..'));
-            var_dump(['files in directory' => $files]);
-        } else {
-            echo "Папка не найдена";
+        $dirOwner = false;
+        $dirName = false;
+        $dirInfo = $this->fileModel->getDirInfo($id);
+        if ($dirInfo) {
+            $dirOwner = $dirInfo->user_owner_id;
+            $dirName = $dirInfo->name;
+        }
+        if ($dirName && ($this->isAdmin || ($dirOwner === $this->userId))) {
+            if (file_exists("uploads/" . $dirName) and is_dir("uploads/" . $dirName)) {
+                $files = array_diff(scandir("uploads/" . $dirName), array('.', '..'));
+                if (!empty($files)) {
+                    $files = array_values($files);
+                }
+                echo json_encode($files);
+            } else {
+                echo "Папка не найдена";
+            }
         }
     }
 
@@ -166,6 +220,13 @@ class File extends Controller
     {
         if (!empty(trim($_POST['directory_name'])) && (!is_dir('uploads/' . trim($_POST['directory_name'])))) {
             mkdir("uploads/" . trim($_POST['directory_name']));
+            $directoryData = [
+                'srcFileName' => trim($_POST['directory_name']),
+                'pathInDb' => '',
+                'ownerId' => $this->userIdId,
+                'extension' => ''
+            ];
+            $this->fileModel->addFile($directoryData);
         }
     }
 
@@ -173,14 +234,21 @@ class File extends Controller
     {
         parse_str(file_get_contents('php://input'), $_PUT);
         if (!empty(trim($_PUT['directory_name']))) {
-            if (file_exists(self::$uploadsDir . $id) and is_dir(self::$uploadsDir . $id)) {
-                if (rename(self::$uploadsDir . $id, self::$uploadsDir . trim($_PUT['directory_name']))) {
-                    // меняем в бд
-                    $this->fileModel->renameDirectoryInFiles($id, trim($_PUT['directory_name']));
-                } else {
-                    echo "Не удалось переименовать";
+            // проверка доступа
+            $dirInfo = $this->fileModel->getDirInfoByName(trim($_PUT['directory_name']));
+            if ($dirInfo) {
+                if (($dirInfo->user_owner_id === $this->userId) || $this->isAdmin) {
+                    if (file_exists(self::$uploadsDir . $id) and is_dir(self::$uploadsDir . $id)) {
+                        if (rename(self::$uploadsDir . $id, self::$uploadsDir . trim($_PUT['directory_name']))) {
+                            // меняем в бд
+                            $this->fileModel->renameDirectoryInFiles($id, trim($_PUT['directory_name']));
+                        } else {
+                            echo "Не удалось переименовать";
+                        }
+                    }
                 }
             }
+            // проверка доступа
         }
     }
 
@@ -211,10 +279,15 @@ class File extends Controller
     {
         $path = 'uploads/' . $id;
         if (file_exists($path) and is_dir($path)) {
-            if ($this->fileModel->deleteDirectory($id, $this->ownerId)) {
-                $this->RDir($path);
-            } else {
-                echo 'Что-то пошло не так';
+            $dirInfo = $this->fileModel->getDirInfo($id);
+            if ($dirInfo) {
+                if (($dirInfo->user_owner_id === $this->userId) || $this->isAdmin) {
+                    if ($this->fileModel->deleteDirectory($id, $this->userId)) {
+                        $this->RDir($path);
+                    } else {
+                        echo 'Что-то пошло не так';
+                    }
+                }
             }
         }
     }
@@ -229,7 +302,7 @@ class File extends Controller
 
     public function shareFile($fileId, $userId)
     {
-        $file = $this->fileModel->findOneFile($fileId, $this->ownerId);
+        $file = $this->fileModel->findOneFile($fileId, $this->userId);
         $user = $this->userModel->findOneUser($userId);
         var_dump(['user' => $user, 'file' => $file]);
         if ($file && $user) {
@@ -241,7 +314,7 @@ class File extends Controller
 
     public function unshareFile($fileId, $userId)
     {
-        $file = $this->fileModel->findOneFile($fileId, $this->ownerId);
+        $file = $this->fileModel->findOneFile($fileId, $this->userId);
         $user = $this->userModel->findOneUser($userId);
         var_dump($file);
         var_dump($user);

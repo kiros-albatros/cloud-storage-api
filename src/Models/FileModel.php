@@ -9,6 +9,12 @@ class FileModel
         $this->db = new Db;
     }
 
+    public function findFileById($id) {
+        $this->db->query("SELECT * FROM `File` WHERE id = :id");
+        $this->db->bind(':id', $id);
+        return $this->db->single();
+    }
+
     public function findOneFile($id, $ownerId)
     {
         $this->db->query("SELECT * FROM `File` WHERE id = :id AND user_owner_id = :user_owner_id");
@@ -32,7 +38,7 @@ class FileModel
         $this->db->bind(":user_owner_id", $fileData['ownerId']);
         $this->db->bind(":extension", $fileData['extension']);
         if ($this->db->execute()) {
-            echo 'Файл успешно загружен';
+            echo 'Успешно добавлено';
         } else {
             echo 'Что-то пошло не так';
         }
@@ -53,15 +59,28 @@ class FileModel
 
     public function deleteFile($id, $ownerId)
     {
-        $this->db->query('DELETE FROM File WHERE id = :id AND user_owner_id = :user_owner_id');
+        $this->db->query('DELETE FROM File WHERE id = :id');
         $this->db->bind(':id', $id);
-        $this->db->bind(':user_owner_id', $ownerId);
         if ($this->db->execute()) {
             echo 'Файл удалён';
         } else {
             echo 'Что-то пошло не так';
         }
     }
+
+    public function getDirInfo($id){
+        $this->db->query('SELECT * FROM `File` WHERE id = :id AND extension = :extension');
+        $this->db->bind(':id', $id);
+        $this->db->bind(':extension', '');
+        return $this->db->single();
+    }
+
+    public function getDirInfoByName($name) {
+        $this->db->query('SELECT * FROM `File` WHERE name = :name AND extension = :extension');
+        $this->db->bind(':name', $name);
+        $this->db->bind(':extension', '');
+        return $this->db->single();
+}
 
     public function deleteDirectory($id, $ownerId)
     {
