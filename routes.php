@@ -2,8 +2,11 @@
 
 const ROUTES = [
     '' => ['GET' => 'MainController::main()'],
-    'user/{id}' => ['GET' => 'User::show()', 'PUT' => 'User::update()', 'DELETE' => 'User::delete()'],
+
     'user/' => ['GET' => 'User::list()', 'POST' => 'User::add()'],
+    'users/{id}' => ['GET' => 'User::show()'],
+    'user/{id}' => ['PUT' => 'User::update()', 'DELETE' => 'User::delete()'],
+
     'user/login' => ['POST' => 'User::login()'],
     'user/logout' => ['GET' => 'User::logout()'],
     'user/reset_password' => ['GET' => 'User::reset_password()'],
@@ -19,6 +22,6 @@ const ROUTES = [
     'directory/' => ['POST' => 'File::addDirectory()'],
     'directory/{id}' => ['GET' => 'File::infoDirectory()', 'PUT' => 'File::renameDirectory()', 'DELETE' => 'File::deleteDirectory()'],
 
-    'file/share/{id}' => ['GET' => 'File::shareList()'],
-    'file/share/{id}/{user_id}' => ['PUT' => 'File::shareFile()', 'DELETE' => 'File::unshareFile()'],
+    'files/share/{id}' => ['GET' => 'File::shareList()'],
+    'files/share/{id}/{user_id}' => ['PUT' => 'File::shareFile()', 'DELETE' => 'File::unshareFile()'],
 ];

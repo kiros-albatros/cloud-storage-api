@@ -16,7 +16,7 @@ class UserModel
 
     public function findAllUsers()
     {
-        $this->db->query('SELECT email FROM `User`;');
+        $this->db->query('SELECT * FROM `User`;');
         return $this->db->resultSet();
     }
 

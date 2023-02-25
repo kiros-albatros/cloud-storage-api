@@ -13,8 +13,10 @@ class Admin extends User
 
     public function usersList()
     {
-        if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
-            $this->list();
+        if (isset($_SESSION['role'])) {
+            if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
+                $this->list();
+            }
         } else {
             echo 'Требуются права администратора';
         }
@@ -22,8 +24,10 @@ class Admin extends User
 
     public function showUser(int $id)
     {
-        if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
-            $this->show($id);
+        if (isset($_SESSION['role'])) {
+            if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
+                $this->show($id);
+            }
         } else {
             echo 'Требуются права администратора';
         }
@@ -31,8 +35,10 @@ class Admin extends User
 
     public function updateUser($id)
     {
-        if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
-            $this->update($id);
+        if (isset($_SESSION['role'])) {
+            if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
+                $this->update($id);
+            }
         } else {
             echo 'Требуются права администратора';
         }
@@ -40,11 +46,12 @@ class Admin extends User
 
     public function deleteUser($id)
     {
-        if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
-            $this->delete($id);
+        if (isset($_SESSION['role'])) {
+            if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
+                $this->delete($id);
+            }
         } else {
             echo 'Требуются права администратора';
         }
     }
-
 }

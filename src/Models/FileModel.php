@@ -19,7 +19,7 @@ class FileModel
 
     public function findAllFiles($ownerId)
     {
-        $this->db->query('SELECT name FROM `File` WHERE user_owner_id = :user_owner_id');
+        $this->db->query('SELECT * FROM `File` WHERE user_owner_id = :user_owner_id');
         $this->db->bind(':user_owner_id', $ownerId);
         return $this->db->resultSet();
     }

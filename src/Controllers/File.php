@@ -1,5 +1,8 @@
 <?php
 
+// todo
+// check if admin - then has owners right, make him as owner
+
 class File extends Controller
 {
     protected $fileModel;
@@ -14,16 +17,19 @@ class File extends Controller
         $this->shareModel = $this->model('ShareModel');
         $this->userModel = $this->model('UserModel');
 
-        $this->ownerId = $_SESSION['user_id'];
         // временная заглушка без сессии
-       // $this->ownerId = 4;
+        $this->ownerId = 4;
+
+        if(isset($_SESSION['user_id'])) {
+            $this->ownerId = $_SESSION['user_id'];
+        }
     }
 
     public function list()
     {
         $files = $this->fileModel->findAllFiles($this->ownerId);
         if ($files) {
-            var_dump($files);
+           echo json_encode($files);
         } else {
             echo "Нет файлов";
         }
@@ -35,11 +41,10 @@ class File extends Controller
         $file = $this->fileModel->findOneFile($id, $this->ownerId);
         $accessForFile = $this->shareModel->checkAccess($id, $this->ownerId);
         if ($file) {
-            var_dump($file);
+            echo json_encode($file);
         } elseif ($accessForFile) {
-            var_dump($accessForFile);
-        }
-        else {
+            echo json_encode($accessForFile);
+        } else {
             echo 'Такого файла не существует или у вас нет к нему доступа';
         }
     }

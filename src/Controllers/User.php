@@ -13,7 +13,11 @@ class User extends Controller
     public function search($email)
     {
         $user = $this->userModel->findUserByEmail($email);
-        var_dump($user);
+        if ($user) {
+            echo json_encode($user);
+        } else {
+            echo "Пользователь не найден";
+        }
     }
 
     public function reset_password()
@@ -46,23 +50,23 @@ class User extends Controller
 
     public function login()
     {
-        if (!empty($_POST['email']) && !empty($_POST['password'])) {
-            $data = [
-                'email' => trim($_POST['email']),
-                'password' => trim($_POST['password']),
-            ];
-
-            $user = $this->userModel->findUserByEmail($data['email']);
-
-            if ($user) {
-                if ($user->password === $data['password']) {
-                    $this->createUserSession($user);
-                    echo "Добро пожаловать";
+        if (isset($_POST['email']) && isset($_POST['password'])) {
+            if (!empty($_POST['email']) && !empty($_POST['password'])) {
+                $data = [
+                    'email' => trim($_POST['email']),
+                    'password' => trim($_POST['password']),
+                ];
+                $user = $this->userModel->findUserByEmail($data['email']);
+                if ($user) {
+                    if ($user->password === $data['password']) {
+                        $this->createUserSession($user);
+                        echo "Добро пожаловать";
+                    } else {
+                        echo "Неверный пароль";
+                    }
                 } else {
-                    echo "Неверный пароль";
+                    echo "Пользователь с таким email не существует";
                 }
-            } else {
-                echo "Пользователь с таким email не существует";
             }
         }
     }
@@ -77,14 +81,13 @@ class User extends Controller
         } else {
             echo 'Вы не авторизованы';
         }
-
     }
 
     public function list()
     {
         $users = $this->userModel->findAllUsers();
         if ($users) {
-            var_dump(['users' => $users]);
+           echo json_encode($users);
         }
     }
 
@@ -98,20 +101,21 @@ class User extends Controller
 
     public function add()
     {
-        if (!empty(trim($_POST['email'])) && !empty(trim($_POST['password']))) {
-            $data = [
-                'email' => trim($_POST['email']),
-                'password' => trim($_POST['password']),
-            ];
-            $user = $this->userModel->findUserByEmail($data['email']);
-            if ($user) {
-                echo "Пользователь с такой почтой уже существует";
-                return;
+        if (isset($_POST['email']) && isset($_POST['password'])) {
+            if (!empty(trim($_POST['email'])) && !empty(trim($_POST['password']))) {
+                $data = [
+                    'email' => trim($_POST['email']),
+                    'password' => trim($_POST['password']),
+                ];
+                $user = $this->userModel->findUserByEmail($data['email']);
+                if ($user) {
+                    echo "Пользователь с такой почтой уже существует";
+                    return;
+                }
+                $this->userModel->addUser($data);
+            } else {
+                echo "Заполните поля";
             }
-           // $data['authToken'] = sha1(random_bytes(100)) . sha1(random_bytes(100));
-            $this->userModel->addUser($data);
-        } else {
-            echo "Заполните поля";
         }
     }
 
