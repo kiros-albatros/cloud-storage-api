@@ -18,7 +18,7 @@ class ShareModel
 
     public function shareList($file_id)
     {
-        $this->db->query('SELECT user_email FROM `File_accesses` WHERE file_id = :file_id');
+        $this->db->query('SELECT * FROM `File_accesses` WHERE file_id = :file_id');
         $this->db->bind(':file_id', $file_id);
         return $this->db->resultSet();
     }

@@ -75,6 +75,7 @@ class File extends Controller
             if (!empty(trim($_POST['file_name']))) {
                 $srcFileName = trim($_POST['file_name']) . '.' . $extension;
             }
+            $newFilePath = 'uploads/' . $srcFileName;
 
             if (isset($_POST['directory'])) {
                 if (!empty(trim($_POST['directory']))) {
@@ -88,7 +89,7 @@ class File extends Controller
                             if ($dirInfo) {
                                 if ($dirInfo->user_owner_id === $this->userId) {
                                     $newFilePath = self::$uploadsDir . $postDirName . '/' . $srcFileName;
-                                    $pathInDb = $postDirName . '/';
+                                    $pathInDb = $postDirName;
                                 }
                             }
                         }
@@ -155,16 +156,19 @@ class File extends Controller
                     echo 'Ошибка при перемещении файла';
                 } else {
                     // запись в бд
-                    $fileData = ['id' => $id, 'name' => trim($_PUT['file_name']) . '.' . $file->extension, 'directory' => trim($_PUT['directory'] . '/')];
+                    $dir = '';
+                    if (!empty(trim($_PUT['directory']))) {
+                        $dir = trim($_PUT['directory']);
+                    }
+                    $fileData = ['id' => $id, 'name' => trim($_PUT['file_name']) . '.' . $file->extension, 'directory' => $dir];
                     $this->fileModel->updateFile($fileData);
                 }
             } else {
                 echo "Нет такого файла";
             }
         } else {
-            echo "Нет такой папки";
+            echo "Неверный путь";
         }
-
     }
 
     public function delete($id)
@@ -223,7 +227,7 @@ class File extends Controller
             $directoryData = [
                 'srcFileName' => trim($_POST['directory_name']),
                 'pathInDb' => '',
-                'ownerId' => $this->userIdId,
+                'ownerId' => $this->userId,
                 'extension' => ''
             ];
             $this->fileModel->addFile($directoryData);
@@ -233,15 +237,21 @@ class File extends Controller
     public function renameDirectory($id)
     {
         parse_str(file_get_contents('php://input'), $_PUT);
+        var_dump($_PUT);
         if (!empty(trim($_PUT['directory_name']))) {
             // проверка доступа
-            $dirInfo = $this->fileModel->getDirInfoByName(trim($_PUT['directory_name']));
+            $dirInfo = $this->fileModel->getDirInfo($id);
+            var_dump($dirInfo);
             if ($dirInfo) {
                 if (($dirInfo->user_owner_id === $this->userId) || $this->isAdmin) {
-                    if (file_exists(self::$uploadsDir . $id) and is_dir(self::$uploadsDir . $id)) {
-                        if (rename(self::$uploadsDir . $id, self::$uploadsDir . trim($_PUT['directory_name']))) {
+                    var_dump('inside');
+                    $oldName = $dirInfo->name;
+                    if (file_exists(self::$uploadsDir . $dirInfo->name) and is_dir(self::$uploadsDir . $dirInfo->name)) {
+                        var_dump('file_exists');
+                        if (rename(self::$uploadsDir . $dirInfo->name, self::$uploadsDir . trim($_PUT['directory_name']))) {
                             // меняем в бд
-                            $this->fileModel->renameDirectoryInFiles($id, trim($_PUT['directory_name']));
+                            $this->fileModel->renameDirectoryInFiles($oldName, trim($_PUT['directory_name']));
+                            $this->fileModel->updateDirectory($id, trim($_PUT['directory_name']));
                         } else {
                             echo "Не удалось переименовать";
                         }
@@ -277,17 +287,17 @@ class File extends Controller
 
     public function deleteDirectory($id)
     {
-        $path = 'uploads/' . $id;
-        if (file_exists($path) and is_dir($path)) {
-            $dirInfo = $this->fileModel->getDirInfo($id);
-            if ($dirInfo) {
-                if (($dirInfo->user_owner_id === $this->userId) || $this->isAdmin) {
-                    if ($this->fileModel->deleteDirectory($id, $this->userId)) {
-                        $this->RDir($path);
-                    } else {
-                        echo 'Что-то пошло не так';
+        $dirInfo = $this->fileModel->getDirInfo($id);
+        if ($dirInfo) {
+            $path = 'uploads/' . $dirInfo->name;
+            if (file_exists($path) and is_dir($path)) {
+                    if (($dirInfo->user_owner_id === $this->userId) || $this->isAdmin) {
+                        if ($this->fileModel->deleteDirectory($id, $dirInfo->name)) {
+                            $this->RDir($path);
+                        } else {
+                            echo 'Что-то пошло не так';
+                        }
                     }
-                }
             }
         }
     }
@@ -297,14 +307,14 @@ class File extends Controller
     public function shareList($id)
     {
         $shareList = $this->shareModel->shareList($id);
-        var_dump(['shareList' => $shareList]);
+        echo json_encode($shareList);
     }
 
     public function shareFile($fileId, $userId)
     {
         $file = $this->fileModel->findOneFile($fileId, $this->userId);
         $user = $this->userModel->findOneUser($userId);
-        var_dump(['user' => $user, 'file' => $file]);
+      //  var_dump(['user' => $user, 'file' => $file]);
         if ($file && $user) {
             $this->shareModel->shareFileInDb($fileId, $userId);
         } else {
@@ -316,8 +326,6 @@ class File extends Controller
     {
         $file = $this->fileModel->findOneFile($fileId, $this->userId);
         $user = $this->userModel->findOneUser($userId);
-        var_dump($file);
-        var_dump($user);
         if ($file && $user) {
             $this->shareModel->unshareFileInDb($fileId, $userId);
         } else {

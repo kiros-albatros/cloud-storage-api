@@ -57,7 +57,7 @@ class FileModel
         }
     }
 
-    public function deleteFile($id, $ownerId)
+    public function deleteFile($id)
     {
         $this->db->query('DELETE FROM File WHERE id = :id');
         $this->db->bind(':id', $id);
@@ -82,16 +82,38 @@ class FileModel
         return $this->db->single();
 }
 
-    public function deleteDirectory($id, $ownerId)
+    public function deleteDirectory($id, $name)
     {
-        $this->db->query('DELETE FROM `File` WHERE directory = :directory AND user_owner_id = :user_owner_id');
-        $this->db->bind(':directory', $id);
-        $this->db->bind(':user_owner_id', $ownerId);
+        $this->db->query('DELETE FROM `File` WHERE id = :id');
+        $this->db->bind(':id', $id);
         if ($this->db->execute()) {
-            echo 'deleted';
+
+            $this->db->query('SELECT * FROM `File` WHERE directory = :directory');
+            $this->db->bind(':directory', $name);
+            $filesInDirectory = $this->db->resultSet();
+            foreach ($filesInDirectory as $file) {
+                $this->db->query('DELETE FROM File WHERE id = :id');
+                $this->db->bind(':id', $file->id);
+                if ($this->db->execute()) {
+                  //  echo 'Удалены файлы папки ';
+                } else {
+                    echo 'Что-то пошло не так';
+                }
+            }
             return true;
         } else {
             return false;
+        }
+    }
+
+    public function updateDirectory($id, $newName) {
+        $this->db->query('UPDATE File SET name = :name WHERE id = :id');
+        $this->db->bind(':id', $id);
+        $this->db->bind(':name', $newName);
+        if ($this->db->execute()) {
+            echo 'Обновлено название папки';
+        } else {
+            echo 'Что-то пошло не так';
         }
     }
 
@@ -100,7 +122,6 @@ class FileModel
         $this->db->query('SELECT * FROM `File` WHERE directory = :directory');
         $this->db->bind(':directory', $directory);
         $filesInDirectory = $this->db->resultSet();
-        var_dump(['$filesInDirectory' => $filesInDirectory]);
         foreach ($filesInDirectory as $file) {
             //   $file->directory = trim($_PUT['directory_name']);
             $this->db->query('UPDATE File SET directory = :directory WHERE id = :id');
@@ -108,7 +129,7 @@ class FileModel
             $this->db->bind(':directory', $newDirectoryName);
 
             if ($this->db->execute()) {
-                echo 'updated';
+                echo 'Обновление в файлах';
             } else {
                 echo 'Что-то пошло не так';
             }

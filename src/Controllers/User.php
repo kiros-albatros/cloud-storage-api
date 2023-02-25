@@ -122,7 +122,7 @@ class User extends Controller
     public function update(int $id)
     {
         parse_str(file_get_contents('php://input'), $_PUT);
-        var_dump($_PUT);
+       // var_dump($_PUT);
         if (!empty(trim($_PUT['email']) && !empty(trim($_PUT['password'])))) {
             $data = [
                 'email' => trim($_PUT['email']),
