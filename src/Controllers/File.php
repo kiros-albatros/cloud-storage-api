@@ -1,8 +1,5 @@
 <?php
 
-// todo
-// check if admin - then has owners right, make him as owner
-
 class File extends Controller
 {
     protected $fileModel;
@@ -14,24 +11,32 @@ class File extends Controller
 
     public function __construct()
     {
-        $this->fileModel = $this->model('FileModel');
-        $this->shareModel = $this->model('ShareModel');
-        $this->userModel = $this->model('UserModel');
+        $this->isAdmin = false;
 
-        // временная заглушка без сессии
-        $this->userId = 4;
 
+      //  var_dump($_SESSION);
         if (isset($_SESSION['user_id'])) {
+          //  var_dump($_SESSION);
+          //  echo 'got';
             $this->userId = $_SESSION['user_id'];
+        } else {
+         //   echo 'hren';
+            $this->userId = 4;
         }
 
         if (isset($_SESSION['user_role'])) {
             if ($_SESSION['user_role'] === 'admin') {
                 $this->isAdmin = true;
             }
-        } else {
-            $this->isAdmin = false;
         }
+
+        $this->fileModel = $this->model('FileModel');
+        $this->shareModel = $this->model('ShareModel');
+        $this->userModel = $this->model('UserModel');
+
+        // временная заглушка без сессии
+      //  $this->userId = 4;
+
     }
 
     public function list()
@@ -40,7 +45,7 @@ class File extends Controller
         if ($files) {
             echo json_encode($files);
         } else {
-            echo "Нет файлов";
+            echo [];
         }
     }
 

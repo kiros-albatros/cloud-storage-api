@@ -1,14 +1,14 @@
 <?php
 
-class MainController
+class MainController extends Controller
 {
     public function main()
     {
-        echo 'Главная страница';
+        $this->view('mainPage');
     }
 
     public function notFound()
     {
-        echo '404 NOT FOUND';
+        $this->view('404');
     }
 }

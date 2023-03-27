@@ -9,7 +9,10 @@ class Core
 
     public function __construct()
     {
-        $uri = $_GET['route'] ?? '';
+        $uri = '';
+        if (isset($_GET['route'])) {
+            $uri = rtrim($_GET['route'], '/');
+        }
         $method = $_POST['_method'] ?? $_SERVER['REQUEST_METHOD'];
         $controllerAndAction = $this->route($uri, $method);
 

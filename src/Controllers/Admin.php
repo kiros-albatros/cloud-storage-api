@@ -9,15 +9,15 @@ class Admin extends User
 
     public function __construct()
     {
-        session_start();
-//        $_SESSION['role'] = 'admin';
+     //   session_start();
+//        $_SESSION['user_role'] = 'admin';
 //        $this->userModel = $this->model('UserModel');
     }
 
     public function usersList()
     {
-        if (isset($_SESSION['role'])) {
-            if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
+        if (isset($_SESSION['user_role'])) {
+            if ((!empty($_SESSION['user_role'])) && ($_SESSION['user_role'] === 'admin')) {
                 $this->list();
             }
         } else {
@@ -27,8 +27,8 @@ class Admin extends User
 
     public function showUser(int $id)
     {
-        if (isset($_SESSION['role'])) {
-            if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
+        if (isset($_SESSION['user_role'])) {
+            if ((!empty($_SESSION['user_role'])) && ($_SESSION['user_role'] === 'admin')) {
                 $this->show($id);
             }
         } else {
@@ -38,8 +38,8 @@ class Admin extends User
 
     public function updateUser($id)
     {
-        if (isset($_SESSION['role'])) {
-            if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
+        if (isset($_SESSION['user_role'])) {
+            if ((!empty($_SESSION['user_role'])) && ($_SESSION['user_role'] === 'admin')) {
                 $this->update($id);
             }
         } else {
@@ -49,8 +49,8 @@ class Admin extends User
 
     public function deleteUser($id)
     {
-        if (isset($_SESSION['role'])) {
-            if ((!empty($_SESSION['role'])) && ($_SESSION['role'] === 'admin')) {
+        if (isset($_SESSION['user_role'])) {
+            if ((!empty($_SESSION['user_role'])) && ($_SESSION['user_role'] === 'admin')) {
                 $this->delete($id);
             }
         } else {

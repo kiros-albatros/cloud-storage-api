@@ -8,3 +8,4 @@ const DB_OPTIONS = array(
     PDO::ATTR_PERSISTENT => true,
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 );
+const URLROOT = 'http://cloud-storage.local';
