@@ -12,15 +12,9 @@ class File extends Controller
     public function __construct()
     {
         $this->isAdmin = false;
-
-
-      //  var_dump($_SESSION);
         if (isset($_SESSION['user_id'])) {
-          //  var_dump($_SESSION);
-          //  echo 'got';
             $this->userId = $_SESSION['user_id'];
         } else {
-         //   echo 'hren';
             $this->userId = 4;
         }
 
@@ -43,9 +37,9 @@ class File extends Controller
     {
         $files = $this->fileModel->findAllFiles($this->userId);
         if ($files) {
-            echo json_encode($files);
+            $this->view('file/fileList', $files);
         } else {
-            echo [];
+            $this->view('file/fileList', []);
         }
     }
 
@@ -68,9 +62,26 @@ class File extends Controller
         }
     }
 
+    public function addForm()
+    {
+        $data = [
+            'dir_err'=>'',
+            'file_repeat'=>'',
+            'save_err'=>'',
+            'empty_err'=>''
+        ];
+        $this->view('file/fileAdd', $data);
+    }
+
     // поля $_FILES['file'], $_POST['file_name'], $_POST['directory']
     public function add()
     {
+        $data = [
+            'dir_err'=>'',
+            'file_repeat'=>'',
+            'save_err'=>'',
+            'empty_err'=>''
+        ];
         if (!empty($_FILES['file'])) {
             $file = $_FILES['file'];
             $srcFileName = $file['name'];
@@ -95,11 +106,16 @@ class File extends Controller
                                 if ($dirInfo->user_owner_id === $this->userId) {
                                     $newFilePath = self::$uploadsDir . $postDirName . '/' . $srcFileName;
                                     $pathInDb = $postDirName;
+                                } else {
+                                    $data['dir_err'] = 'Нет прав на запись в указанную папку';
+                                    $this->view('file/fileAdd', $data);
+                                    return;
                                 }
                             }
                         }
                     } else {
-                        echo "Такой папки не существует";
+                        $data['dir_err'] = 'Такой папки не существует';
+                        $this->view('file/fileAdd', $data);
                         return;
                     }
                 }
@@ -108,18 +124,39 @@ class File extends Controller
             }
 
             if (file_exists($newFilePath)) {
-                echo 'Файл с таким именем уже существует';
+                $data['file_repeat'] = 'Файл с таким именем уже существует';
+                $this->view('file/fileAdd', $data);
                 return;
             }
 
             if (!move_uploaded_file($file['tmp_name'], $newFilePath)) {
-                echo 'Ошибка при загрузке файла';
+                $data['save_err'] = 'Ошибка при загрузке файла';
+                $this->view('file/fileAdd', $data);
+                return;
             } else {
                 // запись в бд
                 $fileData = ['srcFileName' => $srcFileName, 'pathInDb' => $pathInDb, 'ownerId' => $this->userId, 'extension' => $extension];
                 $this->fileModel->addFile($fileData);
+                header('Location: http://cloud-storage.local/file');
+                return;
             }
+        } else {
+            $data['empty_err'] = 'Empty fields';
+            $this->view('file/fileAdd', $data);
+            return;
         }
+    }
+
+    public function updateForm ($id) {
+        $data = [
+            'dir_err'=>'',
+            'file_repeat'=>'',
+            'save_err'=>'',
+            'empty_err'=>''
+        ];
+        $file = $this->fileModel->findFileById($id);
+        $data['file'] = $file;
+        $this->view('file/fileUpdate', $data);
     }
 
     public function update($id)
@@ -183,13 +220,16 @@ class File extends Controller
         } else {
             $file = $this->fileModel->findOneFile($id, $this->userId);
         }
-        //   var_dump($file);
+
         if ($file) {
-            $path = self::$uploadsDir . $file->directory . $file->name;
-            //   var_dump($path);
+            if (strlen($file->directory)>0) {
+                $file->directory = $file->directory . '/';
+            }
+            $path = self::$uploadsDir . $file->directory  . $file->name;
             if (file_exists($path)) {
                 if (unlink($path)) {
                     $this->fileModel->deleteFile($id);
+                    header('Location: http://cloud-storage.local/file');
                 } else {
                     "Что-то пошло не так";
                 }

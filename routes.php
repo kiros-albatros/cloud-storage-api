@@ -20,7 +20,10 @@ const ROUTES = [
     'admin/user/{id}' => ['GET' => 'Admin::showUser()', 'PUT' => 'Admin::updateUser()', 'DELETE' => 'Admin::deleteUser()'],
 
     'file' => ['GET' => 'File::list()', 'POST' => 'File::add()'],
-    'file/{id}' => ['GET' => 'File::show()', 'PUT' => 'File::update()', 'DELETE' => 'File::delete()'],
+    'file/add' => ['GET' => 'File::addForm()'],
+    'file/edit/{id}'=>['GET' =>'File::updateForm()'],
+    'file/delete/{id}'=>['GET' =>'File::delete()'],
+    'file/{id}' => ['GET' => 'File::show()', 'PUT' => 'File::update()'],
 
     'directory' => ['POST' => 'File::addDirectory()'],
     'directory/{id}' => ['GET' => 'File::infoDirectory()', 'PUT' => 'File::renameDirectory()', 'DELETE' => 'File::deleteDirectory()'],
