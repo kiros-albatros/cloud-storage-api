@@ -45,13 +45,15 @@ class File extends Controller
 
     public function show($id)
     {
+        $allUsers = $this->userModel->findAllUsers();
         $file = $this->fileModel->findFileById($id);
         $accessForFile = $this->shareModel->checkAccess($id, $this->userId);
         $users = $this->shareModel->shareList($id);
         if ($file) {
             $data = [
                 'file' => $file,
-                'users' => $users
+                'users' => $users,
+                'allUsers'=>$allUsers
             ];
             if ($this->isAdmin) {
                 $this->view('file/fileInfo', $data);
@@ -377,6 +379,13 @@ class File extends Controller
 
     // SHARE
 
+    public function getSharedFiles()
+    {
+       $sharedFiles = $this->shareModel->getSharedFilesByUser($this->userId);
+        return $this->view('file/sharedFiles', $sharedFiles);
+     //   var_dump($sharedFiles);
+    }
+
     public function shareList($id)
     {
         $shareList = $this->shareModel->shareList($id);
@@ -387,9 +396,10 @@ class File extends Controller
     {
         $file = $this->fileModel->findOneFile($fileId, $this->userId);
         $user = $this->userModel->findOneUser($userId);
-        //  var_dump(['user' => $user, 'file' => $file]);
         if ($file && $user) {
-            $this->shareModel->shareFileInDb($fileId, $userId);
+            $this->shareModel->shareFileInDb($fileId, $userId, $user->email);
+            $path = "Location: http://cloud-storage.local/file/" . $fileId;
+            header($path);
         } else {
             echo "Такого файла или пользователя не существует";
         }
@@ -401,6 +411,8 @@ class File extends Controller
         $user = $this->userModel->findOneUser($userId);
         if ($file && $user) {
             $this->shareModel->unshareFileInDb($fileId, $userId);
+            $path = "Location: http://cloud-storage.local/file/" . $fileId;
+            header($path);
         } else {
             echo "Такого файла или пользователя не существует";
         }

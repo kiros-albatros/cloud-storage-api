@@ -1,5 +1,5 @@
 <?php require('src/Views/partial/header.php'); ?>
-<h3>User Info</h3>
+<h3>Личный кабинет</h3>
 <?php
 if (!empty($data)) { ?>
     <table class="table table-striped">
@@ -26,7 +26,7 @@ if (!empty($data)) { ?>
         </tbody>
     </table>
     <p><a href="<?php echo URLROOT; ?>/user/reset_password">
-            Reset password
+            Сбросить пароль
         </a></p>
 <?php } ?>
 

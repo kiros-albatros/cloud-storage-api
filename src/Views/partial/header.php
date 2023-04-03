@@ -19,28 +19,28 @@
 
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <?php if (isset($_SESSION['user_id'])) { ?>
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="<?php echo URLROOT; ?>/users/<?php echo $_SESSION['user_id']; ?>">Profile</a>
-                </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= URLROOT; ?>/user">Users</a>
+                        <a class="nav-link" href="<?= URLROOT; ?>/user">Пользователи</a>
                     </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?= URLROOT; ?>/file">Files</a>
+                    <a class="nav-link" href="<?= URLROOT; ?>/file">Ваши файлы</a>
                 </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= URLROOT; ?>/directory">Directories</a>
+                        <a class="nav-link" href="<?= URLROOT; ?>/directory">Ваши папки</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= URLROOT; ?>/files/shared">Доступные файлы</a>
                     </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Actions
+                        Добавить
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a class="dropdown-item" href="<?= URLROOT; ?>/file/add">Add file</a>
+                            <a class="dropdown-item" href="<?= URLROOT; ?>/file/add">Добавить файл</a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="<?= URLROOT; ?>/directory/add">Add directory</a>
+                            <a class="dropdown-item" href="<?= URLROOT; ?>/directory/add">Добавить папку</a>
                         </li>
                     </ul>
                 </li>
@@ -50,17 +50,19 @@
             <ul class="navbar-nav ml-auto">
                 <?php if (isset($_SESSION['user_id'])) : ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Welcome <?php echo $_SESSION['user_email']; ?></a>
+                        <span class="nav-link">Добро пожаловать,
+                            <a href="<?= URLROOT; ?>/users/<?= $_SESSION['user_id']; ?>"><?= $_SESSION['user_email']; ?></a>
+                        </span>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo URLROOT; ?>/user/logout">Logout</a>
+                        <a class="nav-link" href="<?php echo URLROOT; ?>/user/logout">Выйти</a>
                     </li>
                 <?php else : ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo URLROOT; ?>/user/register">Register</a>
+                        <a class="nav-link" href="<?php echo URLROOT; ?>/user/register">Регистрация</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo URLROOT; ?>/user/login">Login</a>
+                        <a class="nav-link" href="<?php echo URLROOT; ?>/user/login">Войти</a>
                     </li>
                 <?php endif; ?>
             </ul>

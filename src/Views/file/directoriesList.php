@@ -1,14 +1,13 @@
 <?php require('src/Views/partial/header.php'); ?>
-<h3>Directories List</h3>
+<h3>Список ваших папок</h3>
 <?php if (!empty($data)) {; ?>
     <table class="table table-striped">
         <thead>
         <tr>
             <th scope="col">id</th>
-            <th scope="col">name</th>
-            <th scope="col">mode</th>
-            <th scope="col">edit</th>
-            <th scope="col">delete</th>
+            <th scope="col">навание</th>
+            <th scope="col">изменить</th>
+            <th scope="col">удалить</th>
         </tr>
         </thead>
         <tbody>
@@ -18,7 +17,6 @@
                 <tr>
                     <td scope="row"><?= $dir->id; ?></td>
                     <td><a href="<?php echo URLROOT; ?>/directory/<?= $dir->id; ?>"><?= $dir->name; ?></a></td>
-                    <td><?php echo $dir->user_owner_id == $_SESSION['user_id'] ?  'read/delete' : 'read';?></td>
                     <?php if($dir->user_owner_id == $_SESSION['user_id']) { ?>
                         <td>
                             <button class="btn edit-dir-btn" data-id="<?php echo $dir->id; ?>" data-bs-toggle="modal" data-bs-target="#exampleModal" style="--bs-icon-link-transform: translate3d(0, -.125rem, 0);">
@@ -51,12 +49,12 @@
                 <form method="post" id="dirForm" action="<?php echo URLROOT; ?>/directory/">
                     <input type="hidden" name="_method" value="PUT">
                     <div class="mb-3">
-                        <label for="1" class="form-label">Directory new name</label>
+                        <label for="1" class="form-label">Новое имя папки</label>
                         <input type="text" class="form-control" name="directory_name" id="1">
                     </div>
                     <div class="modal-footer" style="border-top: none;">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Принять</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
                     </div>
                 </form>
             </div>
@@ -64,7 +62,7 @@
     </div>
 
 <?php } else { ?>
-    <h5>No directories</h5>
+    <h5>Нет папок</h5>
 <?php } ?>
 
 <?php require('src/Views/partial/footer.php'); ?>

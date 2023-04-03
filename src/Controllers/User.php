@@ -69,7 +69,8 @@ class User extends Controller
                 $data['password'] = $this->sanitize($_POST['password']);
                 $user = $this->userModel->findUserByEmail($data['email']);
                 if ($user) {
-                    if ($user->password === $data['password']) {
+                   // $user->password === $data['password']
+                    if (password_verify($data['password'], $user->password)) {
                         $this->createUserSession($user);
                        // echo "Добро пожаловать";
                        header('Location: http://cloud-storage.local/user/');
@@ -156,7 +157,7 @@ class User extends Controller
             if (!empty(trim($_POST['email'])) && !empty(trim($_POST['password']))) {
                 $data = [
                     'email' => trim($_POST['email']),
-                    'password' => trim($_POST['password']),
+                    'password' => password_hash(trim($_POST['password']), PASSWORD_DEFAULT),
                 ];
                 $user = $this->userModel->findUserByEmail($data['email']);
                 if ($user) {
@@ -193,7 +194,8 @@ class User extends Controller
         if (!empty(trim($_PUT['email']) && !empty(trim($_PUT['password'])))) {
             $data = [
                 'email' => trim($_PUT['email']),
-                'password' => trim($_PUT['password']),
+               // password_hash(trim($_POST['password']), PASSWORD_DEFAULT)
+                'password' => password_hash(trim($_PUT['password']), PASSWORD_DEFAULT)
             ];
             $this->userModel->updateUser($id, $data);
             header("Location: http://cloud-storage.local/users/$id");

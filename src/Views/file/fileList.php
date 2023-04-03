@@ -1,16 +1,15 @@
 <?php require('src/Views/partial/header.php'); ?>
-<h3>Files List</h3>
+<h3>Список ваших файлов</h3>
 <?php if (!empty($data)) {; ?>
     <table class="table table-striped">
         <thead>
         <tr>
             <th scope="col">id</th>
-            <th scope="col">directory</th>
-            <th scope="col">name</th>
-            <th scope="col">image</th>
-            <th scope="col">mode</th>
-            <th scope="col">edit</th>
-            <th scope="col">delete</th>
+            <th scope="col">папка</th>
+            <th scope="col">название</th>
+            <th scope="col">миниатюра</th>
+            <th scope="col">изменить</th>
+            <th scope="col">удалить</th>
         </tr>
         </thead>
         <tbody>
@@ -22,7 +21,6 @@
                     <td><?= $file->directory; ?></td>
                     <td><a href="<?php echo URLROOT; ?>/file/<?= $file->id; ?>"><?= $file->name; ?></a></td>
                     <td><img width="70px"  src="/uploads/<?= $file->directory . '/' . $file->name ?>" alt=""></td>
-                    <td><?php echo $file->user_owner_id == $_SESSION['user_id'] ?  'read/delete' : 'read';?></td>
                     <?php if($file->user_owner_id == $_SESSION['user_id']) { ?>
                         <td>
                             <a class="icon-link icon-link-hover" style="--bs-icon-link-transform: translate3d(0, -.125rem, 0);" href="<?php echo URLROOT; ?>/file/edit/<?php echo $file->id; ?>">
@@ -49,7 +47,7 @@
         </tbody>
     </table>
 <?php } else { ?>
-    <h5>No files</h5>
+    <h5>Нет файлов</h5>
 <?php } ?>
 
 <?php require('src/Views/partial/footer.php'); ?>

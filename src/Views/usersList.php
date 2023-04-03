@@ -1,5 +1,5 @@
 <?php require('src/Views/partial/header.php'); ?>
-<h3>Users List</h3>
+<h3>Список пользователей</h3>
 <table class="table table-striped">
     <thead>
         <tr>
