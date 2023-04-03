@@ -25,8 +25,10 @@ const ROUTES = [
     'file/delete/{id}'=>['GET' =>'File::delete()'],
     'file/{id}' => ['GET' => 'File::show()', 'PUT' => 'File::update()'],
 
-    'directory' => ['POST' => 'File::addDirectory()'],
-    'directory/{id}' => ['GET' => 'File::infoDirectory()', 'PUT' => 'File::renameDirectory()', 'DELETE' => 'File::deleteDirectory()'],
+    'directory' => ['GET' => 'File::getDirsList()', 'POST' => 'File::addDirectory()'],
+    'directory/add' => ['GET' => 'File::addDirectoryForm()'],
+    'directory/delete/{id}' => ['GET' => 'File::deleteDirectory()'],
+    'directory/{id}' => ['GET' => 'File::infoDirectory()', 'PUT' => 'File::renameDirectory()'],
 
     'files/share/{id}' => ['GET' => 'File::shareList()'],
     'files/share/{id}/{user_id}' => ['PUT' => 'File::shareFile()', 'DELETE' => 'File::unshareFile()'],

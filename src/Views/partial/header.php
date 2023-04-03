@@ -20,29 +20,29 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <?php if (isset($_SESSION['user_id'])) { ?>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="<?php echo URLROOT; ?>/users/<?php echo $_SESSION['user_id']; ?>">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?php echo URLROOT; ?>/file">Files</a>
+                    <a class="nav-link" aria-current="page" href="<?php echo URLROOT; ?>/users/<?php echo $_SESSION['user_id']; ?>">Profile</a>
                 </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo URLROOT; ?>/file/add">Add file</a>
+                        <a class="nav-link" href="<?= URLROOT; ?>/user">Users</a>
+                    </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= URLROOT; ?>/file">Files</a>
+                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= URLROOT; ?>/directory">Directories</a>
                     </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown
+                        Actions
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
                         <li>
-                            <hr class="dropdown-divider">
+                            <a class="dropdown-item" href="<?= URLROOT; ?>/file/add">Add file</a>
                         </li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        <li>
+                            <a class="dropdown-item" href="<?= URLROOT; ?>/directory/add">Add directory</a>
+                        </li>
                     </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled">Disabled</a>
                 </li>
                 <?php }; ?>
             </ul>

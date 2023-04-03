@@ -7,20 +7,21 @@
             <th scope="col">id</th>
             <th scope="col">directory</th>
             <th scope="col">name</th>
+            <th scope="col">image</th>
             <th scope="col">mode</th>
             <th scope="col">edit</th>
             <th scope="col">delete</th>
         </tr>
         </thead>
         <tbody>
-
         <?php
         if (!empty($data)) {
             foreach ($data as $file) { ?>
                 <tr>
                     <td scope="row"><?= $file->id; ?></td>
                     <td><?= $file->directory; ?></td>
-                    <td><?= $file->name; ?></td>
+                    <td><a href="<?php echo URLROOT; ?>/file/<?= $file->id; ?>"><?= $file->name; ?></a></td>
+                    <td><img width="70px"  src="/uploads/<?= $file->directory . '/' . $file->name ?>" alt=""></td>
                     <td><?php echo $file->user_owner_id == $_SESSION['user_id'] ?  'read/delete' : 'read';?></td>
                     <?php if($file->user_owner_id == $_SESSION['user_id']) { ?>
                         <td>

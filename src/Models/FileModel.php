@@ -25,8 +25,9 @@ class FileModel
 
     public function findAllFiles($ownerId)
     {
-        $this->db->query('SELECT * FROM `File` WHERE user_owner_id = :user_owner_id');
+        $this->db->query('SELECT * FROM `File` WHERE user_owner_id = :user_owner_id AND extension != :extension');
         $this->db->bind(':user_owner_id', $ownerId);
+        $this->db->bind(':extension', '');
         return $this->db->resultSet();
     }
 
@@ -37,11 +38,7 @@ class FileModel
         $this->db->bind(":directory", $fileData['pathInDb']);
         $this->db->bind(":user_owner_id", $fileData['ownerId']);
         $this->db->bind(":extension", $fileData['extension']);
-        if ($this->db->execute()) {
-            echo 'Успешно добавлено';
-        } else {
-            echo 'Что-то пошло не так';
-        }
+        $this->db->execute();
     }
 
     public function updateFile($fileData)
@@ -51,7 +48,7 @@ class FileModel
         $this->db->bind(":name", $fileData['name']);
         $this->db->bind(":directory", $fileData['directory']);
         if ($this->db->execute()) {
-            echo 'Файл успешно изменен';
+            echo '<p>File is changed.</p> <a href="http://cloud-storage.local/file">Back to files</a>';
         } else {
             echo 'Что-то пошло не так';
         }
@@ -66,6 +63,16 @@ class FileModel
         } else {
             echo 'Что-то пошло не так';
         }
+    }
+
+    // DIRECTORY
+
+    public function getDirsByUser($userId)
+    {
+        $this->db->query('SELECT * FROM `File` WHERE user_owner_id = :user_owner_id AND extension = :extension');
+        $this->db->bind(':user_owner_id', $userId);
+        $this->db->bind(':extension', '');
+        return $this->db->resultSet();
     }
 
     public function getDirInfo($id){
@@ -110,11 +117,12 @@ class FileModel
         $this->db->query('UPDATE File SET name = :name WHERE id = :id');
         $this->db->bind(':id', $id);
         $this->db->bind(':name', $newName);
-        if ($this->db->execute()) {
-            echo 'Обновлено название папки';
-        } else {
-            echo 'Что-то пошло не так';
-        }
+        $this->db->execute();
+//        if ($this->db->execute()) {
+//            echo 'Обновлено название папки';
+//        } else {
+//            echo 'Что-то пошло не так';
+//        }
     }
 
     public function renameDirectoryInFiles($directory, $newDirectoryName)
@@ -127,12 +135,13 @@ class FileModel
             $this->db->query('UPDATE File SET directory = :directory WHERE id = :id');
             $this->db->bind(':id', $file->id);
             $this->db->bind(':directory', $newDirectoryName);
+            $this->db->execute();
 
-            if ($this->db->execute()) {
-                echo 'Обновление в файлах';
-            } else {
-                echo 'Что-то пошло не так';
-            }
+//            if ($this->db->execute()) {
+//                echo 'Обновление в файлах';
+//            } else {
+//                echo 'Что-то пошло не так';
+//            }
         }
     }
 }
