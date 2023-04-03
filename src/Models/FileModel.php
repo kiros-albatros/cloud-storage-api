@@ -23,6 +23,18 @@ class FileModel
         return $this->db->single();
     }
 
+    public function findAllAdminFiles() {
+        $this->db->query('SELECT * FROM `File` WHERE extension != :extension');
+        $this->db->bind(':extension', '');
+        return $this->db->resultSet();
+    }
+
+    public function findAllAdminDirs() {
+        $this->db->query('SELECT * FROM `File` WHERE extension = :extension');
+        $this->db->bind(':extension', '');
+        return $this->db->resultSet();
+    }
+
     public function findAllFiles($ownerId)
     {
         $this->db->query('SELECT * FROM `File` WHERE user_owner_id = :user_owner_id AND extension != :extension');

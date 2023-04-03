@@ -19,9 +19,17 @@
 
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <?php if (isset($_SESSION['user_id'])) { ?>
+                <?php if ($_SESSION['user_role'] == 'admin') { ?>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= URLROOT; ?>/user">Пользователи</a>
                     </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= URLROOT; ?>/admin/files">Файлы</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= URLROOT; ?>/admin/directories">Папки</a>
+                        </li>
+                    <?php } else { ?>
                 <li class="nav-item">
                     <a class="nav-link" href="<?= URLROOT; ?>/file">Ваши файлы</a>
                 </li>
@@ -44,6 +52,7 @@
                         </li>
                     </ul>
                 </li>
+                <?php } ?>
                 <?php }; ?>
             </ul>
 

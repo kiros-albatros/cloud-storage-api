@@ -1,5 +1,5 @@
 <?php require('src/Views/partial/header.php'); ?>
-<h3>Список ваших файлов</h3>
+<h3>Список файлов</h3>
 <?php if (!empty($data)) {; ?>
     <table class="table table-striped">
         <thead>
@@ -21,7 +21,7 @@
                     <td><?= $file->directory; ?></td>
                     <td><a href="<?php echo URLROOT; ?>/file/<?= $file->id; ?>"><?= $file->name; ?></a></td>
                     <td><img width="70px"  src="/uploads/<?= $file->directory . '/' . $file->name ?>" alt=""></td>
-                    <?php if($file->user_owner_id == $_SESSION['user_id']) { ?>
+                    <?php if($file->user_owner_id == $_SESSION['user_id'] || $_SESSION['user_role'] == 'admin') { ?>
                         <td>
                             <a class="icon-link icon-link-hover" style="--bs-icon-link-transform: translate3d(0, -.125rem, 0);" href="<?php echo URLROOT; ?>/file/edit/<?php echo $file->id; ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">

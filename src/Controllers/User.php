@@ -73,7 +73,7 @@ class User extends Controller
                     if (password_verify($data['password'], $user->password)) {
                         $this->createUserSession($user);
                        // echo "Добро пожаловать";
-                       header('Location: http://cloud-storage.local/user/');
+                       header('Location: http://cloud-storage.local/file');
                     } else {
                       //  echo "Неверный пароль";
                     $data['password_err'] = "Неверный пароль";

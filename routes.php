@@ -6,6 +6,9 @@ const ROUTES = [
     'user' => ['GET' => 'User::list()', 'POST' => 'User::add()'],
     'users/{id}' => ['GET' => 'User::show()'],
     'user/{id}' => ['PUT' => 'User::update()', 'DELETE' => 'User::delete()'],
+    'user/delete/{id}' => ['GET' => 'Admin::deleteUser()'],
+    'admin/files'=> ['GET' => 'Admin::filesList()'],
+    'admin/directories'=> ['GET' => 'Admin::dirsList()'],
 
     'user/change_pass' => ['GET' => 'User::changePass()'],
 
@@ -16,8 +19,8 @@ const ROUTES = [
 
     'user/search/{email}' => ['GET' => 'User::search()'],
 
-    'admin/user' => ['GET' => 'Admin::usersList()'],
-    'admin/user/{id}' => ['GET' => 'Admin::showUser()', 'PUT' => 'Admin::updateUser()', 'DELETE' => 'Admin::deleteUser()'],
+//    'admin/user' => ['GET' => 'Admin::usersList()'],
+//    'admin/user/{id}' => ['GET' => 'Admin::showUser()', 'PUT' => 'Admin::updateUser()', 'DELETE' => 'Admin::deleteUser()'],
 
     'file' => ['GET' => 'File::list()', 'POST' => 'File::add()'],
     'file/add' => ['GET' => 'File::addForm()'],

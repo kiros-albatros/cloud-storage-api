@@ -9,15 +9,28 @@ class Admin extends User
 
     public function __construct()
     {
-     //   session_start();
-//        $_SESSION['user_role'] = 'admin';
-//        $this->userModel = $this->model('UserModel');
+        session_start();
+       $_SESSION['user_role'] = 'admin';
+       $this->userModel = $this->model('UserModel');
+        $this->fileModel = $this->model('FileModel');
     }
 
-    public function usersList()
+    public function filesList()
+    {
+        $files = $this->fileModel->findAllAdminFiles();
+        $this->view('file/fileList', $files);
+    }
+
+    public function dirsList()
+    {
+        $dirs = $this->fileModel->findAllAdminDirs();
+        $this->view('file/directoriesList', $dirs);
+    }
+
+    public function adminUsersList()
     {
         if (isset($_SESSION['user_role'])) {
-            if ((!empty($_SESSION['user_role'])) && ($_SESSION['user_role'] === 'admin')) {
+            if (($_SESSION['user_role'] === 'admin')) {
                 $this->list();
             }
         } else {
@@ -52,6 +65,7 @@ class Admin extends User
         if (isset($_SESSION['user_role'])) {
             if ((!empty($_SESSION['user_role'])) && ($_SESSION['user_role'] === 'admin')) {
                 $this->delete($id);
+                header('Location:http://cloud-storage.local/user');
             }
         } else {
             echo 'Требуются права администратора';

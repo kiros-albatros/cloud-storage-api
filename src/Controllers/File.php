@@ -33,6 +33,16 @@ class File extends Controller
 
     }
 
+    public function getAdminFilesList() {
+        $files = $this->fileModel->findAllAdminFiles();
+        $this->view('file/fileList', $files);
+    }
+
+    public function getAdminDirsList() {
+        $dirs = $this->fileModel->findAllAdminDirs();
+        $this->view('file/directoriesList', $dirs);
+    }
+
     public function list()
     {
         $files = $this->fileModel->findAllFiles($this->userId);
@@ -382,7 +392,7 @@ class File extends Controller
     public function getSharedFiles()
     {
        $sharedFiles = $this->shareModel->getSharedFilesByUser($this->userId);
-        return $this->view('file/sharedFiles', $sharedFiles);
+       return $this->view('file/sharedFiles', $sharedFiles);
      //   var_dump($sharedFiles);
     }
 

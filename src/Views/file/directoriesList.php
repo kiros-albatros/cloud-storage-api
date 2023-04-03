@@ -1,5 +1,5 @@
 <?php require('src/Views/partial/header.php'); ?>
-<h3>Список ваших папок</h3>
+<h3>Список папок</h3>
 <?php if (!empty($data)) {; ?>
     <table class="table table-striped">
         <thead>
@@ -17,7 +17,7 @@
                 <tr>
                     <td scope="row"><?= $dir->id; ?></td>
                     <td><a href="<?php echo URLROOT; ?>/directory/<?= $dir->id; ?>"><?= $dir->name; ?></a></td>
-                    <?php if($dir->user_owner_id == $_SESSION['user_id']) { ?>
+                    <?php if($dir->user_owner_id == $_SESSION['user_id'] || $_SESSION['user_role'] == 'admin') { ?>
                         <td>
                             <button class="btn edit-dir-btn" data-id="<?php echo $dir->id; ?>" data-bs-toggle="modal" data-bs-target="#exampleModal" style="--bs-icon-link-transform: translate3d(0, -.125rem, 0);">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#0d6efd" class="bi bi-pencil-square" viewBox="0 0 16 16">

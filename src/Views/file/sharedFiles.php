@@ -12,9 +12,7 @@
         </tr>
         </thead>
         <tbody>
-        <?php
-        if (!empty($data)) {
-            foreach ($data as $file) { ?>
+        <?php foreach ($data as $file) { ?>
                 <tr>
                     <td scope="row"><?= $file->id; ?></td>
                     <td><?= $file->directory; ?></td>
@@ -30,8 +28,7 @@
                     </td>
                 </tr>
                 <?php
-            }
-        } ?>
+            } ?>
 
         </tbody>
     </table>
