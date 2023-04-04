@@ -14,8 +14,6 @@ class File extends Controller
         $this->isAdmin = false;
         if (isset($_SESSION['user_id'])) {
             $this->userId = $_SESSION['user_id'];
-        } else {
-            $this->userId = 4;
         }
 
         if (isset($_SESSION['user_role'])) {
@@ -27,18 +25,16 @@ class File extends Controller
         $this->fileModel = $this->model('FileModel');
         $this->shareModel = $this->model('ShareModel');
         $this->userModel = $this->model('UserModel');
-
-        // временная заглушка без сессии
-        //  $this->userId = 4;
-
     }
 
-    public function getAdminFilesList() {
+    public function getAdminFilesList()
+    {
         $files = $this->fileModel->findAllAdminFiles();
         $this->view('file/fileList', $files);
     }
 
-    public function getAdminDirsList() {
+    public function getAdminDirsList()
+    {
         $dirs = $this->fileModel->findAllAdminDirs();
         $this->view('file/directoriesList', $dirs);
     }
@@ -63,7 +59,7 @@ class File extends Controller
             $data = [
                 'file' => $file,
                 'users' => $users,
-                'allUsers'=>$allUsers
+                'allUsers' => $allUsers
             ];
             if ($this->isAdmin) {
                 $this->view('file/fileInfo', $data);
@@ -232,7 +228,6 @@ class File extends Controller
         } else {
             $file = $this->fileModel->findOneFile($id, $this->userId);
         }
-
         if ($file) {
             if (strlen($file->directory) > 0) {
                 $file->directory = $file->directory . '/';
@@ -241,7 +236,11 @@ class File extends Controller
             if (file_exists($path)) {
                 if (unlink($path)) {
                     $this->fileModel->deleteFile($id);
-                    header('Location: http://cloud-storage.local/file');
+                    if ($this->isAdmin) {
+                        header('Location: http://cloud-storage.local/admin/files');
+                    } else {
+                        header('Location: http://cloud-storage.local/file');
+                    }
                 } else {
                     "Что-то пошло не так";
                 }
@@ -378,7 +377,11 @@ class File extends Controller
                 if (($dirInfo->user_owner_id === $this->userId) || $this->isAdmin) {
                     if ($this->fileModel->deleteDirectory($id, $dirInfo->name)) {
                         $this->RDir($path);
-                        header('Location: http://cloud-storage.local/directory');
+                        if ($this->isAdmin) {
+                            header('Location: http://cloud-storage.local/admin/directories');
+                        } else {
+                            header('Location: http://cloud-storage.local/directory');
+                        }
                     } else {
                         echo 'Что-то пошло не так';
                     }
@@ -391,9 +394,9 @@ class File extends Controller
 
     public function getSharedFiles()
     {
-       $sharedFiles = $this->shareModel->getSharedFilesByUser($this->userId);
-       return $this->view('file/sharedFiles', $sharedFiles);
-     //   var_dump($sharedFiles);
+        $sharedFiles = $this->shareModel->getSharedFilesByUser($this->userId);
+        return $this->view('file/sharedFiles', $sharedFiles);
+        //   var_dump($sharedFiles);
     }
 
     public function shareList($id)

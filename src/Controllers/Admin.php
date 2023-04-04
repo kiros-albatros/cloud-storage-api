@@ -12,7 +12,7 @@ class Admin extends User
         session_start();
        $_SESSION['user_role'] = 'admin';
        $this->userModel = $this->model('UserModel');
-        $this->fileModel = $this->model('FileModel');
+       $this->fileModel = $this->model('FileModel');
     }
 
     public function filesList()

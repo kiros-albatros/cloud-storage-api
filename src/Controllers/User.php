@@ -22,7 +22,7 @@ class User extends Controller
     public function changePass()
     {
         $data['email'] = $_SESSION['user_email'];
-        $this->view('changePass', $data);
+        $this->view('user/changePass', $data);
     }
 
     public function reset_password()
@@ -73,21 +73,21 @@ class User extends Controller
                     if (password_verify($data['password'], $user->password)) {
                         $this->createUserSession($user);
                        // echo "Добро пожаловать";
-                       header('Location: http://cloud-storage.local/file');
+                       header('Location: http://cloud-storage.local');
                     } else {
                       //  echo "Неверный пароль";
                     $data['password_err'] = "Неверный пароль";
-                    $this->view('login', $data);
+                    $this->view('user/login', $data);
                     }
                 } else {
                     // echo "Пользователь с таким email не существует";
                     $data['email_err'] = 'Пользователь с таким email не существует';
-                    $this->view('login', $data);
+                    $this->view('user/login', $data);
                 }
             }
         }
         $data['empty_err'] = 'Заполните поля';
-        $this->view('login', $data);
+        $this->view('user/login', $data);
     }
 
     public function loginForm (){
@@ -98,7 +98,7 @@ class User extends Controller
             'email_err' => '',
             'empty_err' => ''
         ];
-        $this->view('login', $data);
+        $this->view('user/login', $data);
     }
 
     public function logout()
@@ -121,7 +121,7 @@ class User extends Controller
         $users = $this->userModel->findAllUsers();
         if ($users) {
             $data['users'] = $users;
-            $this->view('usersList', $data);
+            $this->view('user/usersList', $data);
           // echo json_encode($users);
         }
     }
@@ -131,7 +131,7 @@ class User extends Controller
         $user = $this->userModel->findOneUser($id);
      //   var_dump($user);
         if ($user) {
-            $this->view('user', $user);
+            $this->view('user/user', $user);
         }
     }
 
@@ -142,7 +142,7 @@ class User extends Controller
             'email_err' => '',
             'empty_err' => ''
         ];
-        $this->view('register', $data);
+        $this->view('user/register', $data);
     }
 
     // register
@@ -162,7 +162,7 @@ class User extends Controller
                 $user = $this->userModel->findUserByEmail($data['email']);
                 if ($user) {
                     $data['email_err'] = "Пользователь с такой почтой уже существует";
-                    $this->view('register', $data);
+                    $this->view('user/register', $data);
                     return;
                 }
                 $this->userModel->addUser($data);
@@ -171,13 +171,14 @@ class User extends Controller
                 header('Location: http://cloud-storage.local/');
             } else {
                 $data['empty_err'] = "Заполните поля";
-                $this->view('register', $data);
+                $this->view('user/register', $data);
             }
         }
         $data['empty_err'] = 'Заполните поля';
-        $this->view('register', $data);
+        $this->view('user/register', $data);
     }
 
+    // ???? todo
     public function updateForm(){
         if(isset($_SESSION['user_email'])) {
             $data = [

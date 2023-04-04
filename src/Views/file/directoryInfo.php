@@ -1,10 +1,10 @@
 <?php require('src/Views/partial/header.php'); ?>
 
-<h3>Files in directory</h3>
+<h3>Файлы в папке</h3>
 <table class="table table-striped">
     <thead>
     <tr>
-        <th scope="col">file name</th>
+        <th scope="col">название файлы</th>
     </tr>
     </thead>
     <tbody>

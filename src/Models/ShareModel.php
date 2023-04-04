@@ -11,8 +11,8 @@ class ShareModel
 
     public function getSharedFilesByUser($userId)
     {
-        $this->db->query("SELECT * FROM File_accesses LEFT JOIN File ON File_accesses.file_id = File.id  WHERE user_id = :user_id AND id != :id");
-        $this->db->bind(':id', null);
+        $this->db->query("SELECT * FROM File_accesses LEFT JOIN File ON File_accesses.file_id = File.id  WHERE user_id = :user_id AND id IS NOT NULL");
+      //  $this->db->bind(':id', NULL);
         $this->db->bind(':user_id', $userId);
 
         return $this->db->resultSet();
