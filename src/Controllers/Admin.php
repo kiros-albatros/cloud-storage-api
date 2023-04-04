@@ -65,7 +65,8 @@ class Admin extends User
         if (isset($_SESSION['user_role'])) {
             if ((!empty($_SESSION['user_role'])) && ($_SESSION['user_role'] === 'admin')) {
                 $this->delete($id);
-                header('Location:http://cloud-storage.local/user');
+                $path = 'Location:' . URLROOT . '/user';
+                header($path);
             }
         } else {
             echo 'Требуются права администратора';

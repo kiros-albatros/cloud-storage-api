@@ -146,7 +146,8 @@ class File extends Controller
                 // запись в бд
                 $fileData = ['srcFileName' => $srcFileName, 'pathInDb' => $pathInDb, 'ownerId' => $this->userId, 'extension' => $extension];
                 $this->fileModel->addFile($fileData);
-                header('Location: http://cloud-storage.local/file');
+                $path = 'Location:' . URLROOT . '/file';
+                header($path);
                 return;
             }
         } else {
@@ -212,6 +213,8 @@ class File extends Controller
                     }
                     $fileData = ['id' => $id, 'name' => $file->name, 'directory' => $dir];
                     $this->fileModel->updateFile($fileData);
+                    $path = 'Location:' . URLROOT . '/file';
+                    header($path);
                 }
             } else {
                 echo "Нет такого файла";
@@ -237,10 +240,11 @@ class File extends Controller
                 if (unlink($path)) {
                     $this->fileModel->deleteFile($id);
                     if ($this->isAdmin) {
-                        header('Location: http://cloud-storage.local/admin/files');
+                        $path = 'Location:' . URLROOT . '/admin/files';
                     } else {
-                        header('Location: http://cloud-storage.local/file');
+                        $path = 'Location:' . URLROOT . '/file';
                     }
+                    header($path);
                 } else {
                     "Что-то пошло не так";
                 }
@@ -318,7 +322,8 @@ class File extends Controller
             'extension' => ''
         ];
         $this->fileModel->addFile($directoryData);
-        header('Location: http://cloud-storage.local/directory');
+        $path = 'Location:' . URLROOT .'/directory';
+        header($path);
     }
 
     public function renameDirectory($id)
@@ -342,7 +347,8 @@ class File extends Controller
             }
             // проверка доступа
         }
-        header('Location: http://cloud-storage.local/directory');
+        $path = 'Location:'. URLROOT .'/directory';
+        header($path);
     }
 
     // удаление папки с файлами на сервере
@@ -378,10 +384,11 @@ class File extends Controller
                     if ($this->fileModel->deleteDirectory($id, $dirInfo->name)) {
                         $this->RDir($path);
                         if ($this->isAdmin) {
-                            header('Location: http://cloud-storage.local/admin/directories');
+                            $path = 'Location:'. URLROOT .'/admin/directories';
                         } else {
-                            header('Location: http://cloud-storage.local/directory');
+                            $path = 'Location:'. URLROOT .'/directory';
                         }
+                        header($path);
                     } else {
                         echo 'Что-то пошло не так';
                     }
@@ -411,7 +418,7 @@ class File extends Controller
         $user = $this->userModel->findOneUser($userId);
         if ($file && $user) {
             $this->shareModel->shareFileInDb($fileId, $userId, $user->email);
-            $path = "Location: http://cloud-storage.local/file/" . $fileId;
+            $path = 'Location:' . URLROOT. '/file/' . $fileId;
             header($path);
         } else {
             echo "Такого файла или пользователя не существует";
@@ -424,7 +431,7 @@ class File extends Controller
         $user = $this->userModel->findOneUser($userId);
         if ($file && $user) {
             $this->shareModel->unshareFileInDb($fileId, $userId);
-            $path = "Location: http://cloud-storage.local/file/" . $fileId;
+            $path = 'Location:' . URLROOT. '/file/' . $fileId;
             header($path);
         } else {
             echo "Такого файла или пользователя не существует";

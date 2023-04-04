@@ -59,11 +59,7 @@ class FileModel
         $this->db->bind(':id', $fileData['id']);
         $this->db->bind(":name", $fileData['name']);
         $this->db->bind(":directory", $fileData['directory']);
-        if ($this->db->execute()) {
-            echo '<p>File is changed.</p> <a href="http://cloud-storage.local/file">Back to files</a>';
-        } else {
-            echo 'Что-то пошло не так';
-        }
+        $this->db->execute();
     }
 
     public function deleteFile($id)

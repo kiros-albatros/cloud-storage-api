@@ -31,7 +31,8 @@ class User extends Controller
             $user = $this->userModel->findUserByEmail($_SESSION['user_email']);
             if ($user) {
                 $subject = 'Сброс пароля';
-                $body = "<a href='http://cloud-storage.local/user/change_pass'>Перейдите по ссылке для сброса пароля </a>" ;
+                $path = URLROOT . '/user/change_pass';
+                $body = "<a href='$path'>Перейдите по ссылке для сброса пароля </a>" ;
                 try {
                     if (mail($user->email, $subject, $body, 'Content-Type: text/html; charset=UTF-8')) {
                         { echo "<p>Email was sent</p><a href='/'>Main Page</a>"; }
@@ -73,7 +74,8 @@ class User extends Controller
                     if (password_verify($data['password'], $user->password)) {
                         $this->createUserSession($user);
                        // echo "Добро пожаловать";
-                       header('Location: http://cloud-storage.local');
+                        $path = 'Location:' . URLROOT;
+                        header($path);
                     } else {
                       //  echo "Неверный пароль";
                     $data['password_err'] = "Неверный пароль";
@@ -109,7 +111,8 @@ class User extends Controller
             unset($_SESSION['user_email']);
             unset($_SESSION['user_role']);
             session_destroy();
-            header('Location: http://cloud-storage.local/');
+            $path = 'Location:' . URLROOT;
+            header($path);
         } else {
             echo 'Вы не авторизованы';
         }
@@ -168,7 +171,8 @@ class User extends Controller
                 $this->userModel->addUser($data);
                 $user = $this->userModel->findUserByEmail($data['email']);
                 $this->createUserSession($user);
-                header('Location: http://cloud-storage.local/');
+                $path = 'Location:' . URLROOT;
+                header($path);
             } else {
                 $data['empty_err'] = "Заполните поля";
                 $this->view('user/register', $data);
@@ -199,7 +203,8 @@ class User extends Controller
                 'password' => password_hash(trim($_PUT['password']), PASSWORD_DEFAULT)
             ];
             $this->userModel->updateUser($id, $data);
-            header("Location: http://cloud-storage.local/users/$id");
+            $path = 'Location:' . URLROOT . '/users/' .  $id;
+            header($path);
         } else {
             echo "Заполните поля";
         }
