@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
         var formAttr = form.getAttribute("action");
         console.log('formAttr ', formAttr);
         dirEditBtns.forEach((btn)=>btn.addEventListener('click', function () {
-            var formAction = `http://cloud-storage.local/directory/`;
+            var formAction = formAttr;
             id = this.getAttribute('data-id');
             console.log('id ', id);
             formAction += id;

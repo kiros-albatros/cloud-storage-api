@@ -6,10 +6,21 @@
           style="width: 100%;
         margin-top: .25rem;
         font-size: .875em;
-        color: var(--bs-danger-text);"><?php echo (!empty($data['empty_err']) ? $data['empty_err'] : ""); ?></span>
+        color: var(--bs-danger-text);">
+        <?php echo(!empty($data['empty_err']) ? $data['empty_err'] : ""); ?>
+    </span>
     <div class="mb-3">
         <label for="directory" class="form-label">Папка, в которую сохранить</label>
-        <input type="text" class="form-control" name="directory" id="directory">
+        <select name="directory" class="form-select" id="directory">
+            <option value="" selected>uploads</option>
+            <?php
+            if (isset($data['dirs']) && !empty($data['dirs'])) {
+                foreach ($data['dirs'] as $dir) { ?>
+                    <option value="<?= $dir->name ?>"><?= $dir->name ?></option>
+                <?php }
+            }
+            ?>
+        </select>
     </div>
     <div class="mb-3">
         <label for="formFile" class="form-label">Файл</label>

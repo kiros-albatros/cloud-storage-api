@@ -77,7 +77,9 @@ class File extends Controller
 
     public function addForm()
     {
+        $dirs = $this->fileModel->getDirsByUser($this->userId);
         $data = [
+            'dirs'=>$dirs,
             'dir_err' => '',
             'file_repeat' => '',
             'save_err' => '',
@@ -159,7 +161,9 @@ class File extends Controller
 
     public function updateForm($id)
     {
+        $dirs = $this->fileModel->getDirsByUser($this->userId);
         $data = [
+            'dirs'=>$dirs,
             'dir_err' => '',
             'file_repeat' => '',
             'save_err' => '',

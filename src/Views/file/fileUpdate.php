@@ -10,7 +10,16 @@
         color: var(--bs-danger-text);"><?= (!empty($data['empty_err']) ? $data['empty_err'] : ""); ?></span>
     <div class="mb-3">
         <label for="directory" class="form-label">Название папки</label>
-        <input type="text" class="form-control" name="directory" id="directory" value="<?= $data['file']->directory ?>">
+        <select name="directory" class="form-select" id="directory">
+            <option value="" selected>uploads</option>
+            <?php
+            if (isset($data['dirs']) && !empty($data['dirs'])) {
+                foreach ($data['dirs'] as $dir) { ?>
+                    <option value="<?= $dir->name ?>"><?= $dir->name ?></option>
+                <?php }
+            }
+            ?>
+        </select>
     </div>
 
     <button type="submit" class="btn btn-primary">Принять</button>
